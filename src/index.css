@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-navy: #0B132B;
+    --primary-navy-surface: #1C2541;
+    --accent-gold: #F59E0B;
+    --accent-gold-hover: #D97706;
+    --accent-gold-light: #FEF3C7;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #F8FAFC;
+    color: #1E293B;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-navy {
+  background: rgba(11, 19, 43, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Animation utilities */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s infinite ease-in-out;
+}
+
+/* Number plate styling */
+.number-plate {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #FFFFFF;
+  border: 2px solid #0B132B;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.number-plate-ind {
+  background: #0B132B;
+  color: #FFFFFF;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1.5px solid #0B132B;
+}
+
+.number-plate-code {
+  color: #0B132B;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+}
+
+/* Print pass styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-pass-area, .print-pass-area * {
+    visibility: visible;
+  }
+  .print-pass-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
