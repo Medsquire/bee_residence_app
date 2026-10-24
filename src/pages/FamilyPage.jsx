@@ -18,11 +18,10 @@ export default function FamilyPage() {
   const [memberToEdit, setMemberToEdit] = useState(null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <PageHeader
         title="Family Members & Household"
-        subtitle="Manage household members who share apartment Flat 1204 access, visitor approvals, and service requests."
         badge={
           <Badge variant="neutral" size="md">
             {members.length} Members

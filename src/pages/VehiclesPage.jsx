@@ -29,11 +29,10 @@ export default function VehiclesPage() {
   }, [vehicles, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <PageHeader
         title="My Vehicles & Parking"
-        subtitle="Manage resident vehicles registered with Flat 1204 for automatic boom-barrier entry and assigned slots."
         badge={
           <Badge variant="neutral" size="md">
             {vehiclesCount} Registered

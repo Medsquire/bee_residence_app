@@ -62,14 +62,6 @@ export default function DashboardPage() {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState(null);
 
-  // Time-of-day greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
   const handleDecisionClick = (visitor, decision) => {
     setDecisionModalData({ isOpen: true, visitor, decision });
   };
@@ -98,13 +90,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner & Greeting */}
-      <div className="rounded-3xl bg-gradient-to-r from-navy-900 via-navy-800 to-navy-950 p-6 sm:p-8 text-white relative overflow-hidden shadow-card border border-navy-700/60">
+      {/* Top Banner */}
+      <div className="rounded-3xl bg-gradient-to-r from-navy-900 via-navy-800 to-navy-950 p-3.5 sm:p-5 md:p-6 text-white relative overflow-hidden shadow-card border border-navy-700/60">
         <div className="absolute top-0 right-0 w-80 h-80 bg-bee-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-bee-400 bg-bee-500/15 px-2.5 py-0.5 rounded-full border border-bee-500/30">
                 {household.tower} • Flat {household.flatNumber}
               </span>
@@ -112,21 +104,16 @@ export default function DashboardPage() {
                 {household.apartmentName}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              {getGreeting()}, {currentUser?.name?.split(' ')[0]}!
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-              Welcome to your residential dashboard. Manage visitors, book maintenance repairs, and register guests in one place.
-            </p>
           </div>
 
           {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 md:pt-0">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2.5 shrink-0 w-full sm:w-auto">
             <Button
               variant="gold"
               size="md"
               icon={QrCode}
               onClick={() => setIsPassModalOpen(true)}
+              className="w-full sm:w-auto justify-center text-xs sm:text-sm px-2.5 sm:px-4 py-2"
             >
               New Guest Pass
             </Button>
@@ -135,6 +122,7 @@ export default function DashboardPage() {
               size="md"
               icon={Wrench}
               onClick={() => setIsServiceModalOpen(true)}
+              className="w-full sm:w-auto justify-center text-xs sm:text-sm px-2.5 sm:px-4 py-2"
             >
               Book Service
             </Button>

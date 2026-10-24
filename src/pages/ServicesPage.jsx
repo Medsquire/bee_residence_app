@@ -85,11 +85,10 @@ export default function ServicesPage() {
   }, [serviceRequests, activeTab, selectedCategory, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Page Header */}
       <PageHeader
         title="Home Services & Repairs"
-        subtitle="Book trusted society maintenance technicians, view appointment slots, and track job progress."
         badge={
           activeServicesCount > 0 ? (
             <Badge variant="warning" size="md">

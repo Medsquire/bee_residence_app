@@ -10,7 +10,7 @@ import VisitorDecisionModal from '../components/visitors/VisitorDecisionModal';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useToast } from '../context/ToastContext';
-import { UserCheck, Sparkles, Filter, Users, ShieldAlert } from 'lucide-react';
+import { UserCheck, Sparkles, Filter, ShieldAlert } from 'lucide-react';
 
 const TABS = [
   { id: 'all', label: 'All Visitors' },
@@ -106,11 +106,10 @@ export default function VisitorsPage() {
   }, [visitors, activeTab, selectedCategory, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Page Header */}
       <PageHeader
         title="My Visitors"
-        subtitle="Approve or decline gate arrivals, manage delivery drop-offs, and track check-ins."
         badge={
           pendingVisitorsCount > 0 ? (
             <Badge variant="danger" size="md">
@@ -186,17 +185,6 @@ export default function VisitorsPage() {
               </option>
             ))}
           </select>
-        </div>
-      </div>
-
-      {/* Shared Household Status Banner */}
-      <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-        <Users className="w-4 h-4 text-bee-600 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-bold">Shared Household Decision Sync</p>
-          <p className="text-[11px] text-amber-800/90 mt-0.5">
-            Any decision taken by you or another family member locks the request instantly. All household members see who processed the arrival.
-          </p>
         </div>
       </div>
 

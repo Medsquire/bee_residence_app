@@ -139,6 +139,14 @@ export default function VisitorCard({ visitor, onInspect, onDecision }) {
 
           <div className="flex items-center gap-2">
             <Button
+              variant="success"
+              size="sm"
+              icon={Check}
+              onClick={() => onDecision(visitor, 'Approved')}
+            >
+              Approve Entry
+            </Button>
+            <Button
               variant="warning"
               size="sm"
               icon={Package}
@@ -153,14 +161,6 @@ export default function VisitorCard({ visitor, onInspect, onDecision }) {
               onClick={() => onDecision(visitor, 'Rejected')}
             >
               Reject
-            </Button>
-            <Button
-              variant="success"
-              size="sm"
-              icon={Check}
-              onClick={() => onDecision(visitor, 'Approved')}
-            >
-              Approve Entry
             </Button>
           </div>
         </div>

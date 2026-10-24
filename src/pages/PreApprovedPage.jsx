@@ -46,11 +46,10 @@ export default function PreApprovedPage() {
   }, [preApprovedPasses, activeTab, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <PageHeader
         title="Pre-Approved Visitor Passes"
-        subtitle="Issue advance QR entry passes and security gate OTPs to your friends, family, cabs, and delivery drivers."
         badge={
           activePassesCount > 0 ? (
             <Badge variant="primary" size="md">

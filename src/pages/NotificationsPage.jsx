@@ -65,10 +65,9 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Notifications & Community Alerts"
-        subtitle="Real-time updates regarding visitor gate arrivals, technician assignments, and society notices."
         badge={
           unreadNotificationsCount > 0 ? (
             <Badge variant="danger" size="md">
