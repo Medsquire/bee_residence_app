@@ -8,6 +8,7 @@ import confetti from 'canvas-confetti';
 import { Wrench, Calendar, Clock, AlertTriangle, Building, Phone, User } from 'lucide-react';
 
 const SERVICE_CATEGORIES = [
+  'Apartment Issues',
   'Plumbing',
   'Electrical Repairs',
   'Water Pump and Motor',
@@ -131,7 +132,7 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Book a Home Service Request"
+      title="Book a Service Request"
       subtitle="Estate maintenance team will verify availability and assign an authorized technician."
       maxWidth="max-w-2xl"
     >

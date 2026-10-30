@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   UserCheck,
-  QrCode,
   Wrench,
   Car,
   Bell,
@@ -24,7 +23,6 @@ export default function Sidebar({ isOpen, onClose }) {
     household,
     pendingVisitorsCount,
     activeServicesCount,
-    activePassesCount,
     unreadNotificationsCount,
     vehiclesCount
   } = useHousehold();
@@ -42,14 +40,8 @@ export default function Sidebar({ isOpen, onClose }) {
       badge: pendingVisitorsCount > 0 ? { count: pendingVisitorsCount, variant: 'danger' } : null,
     },
     {
-      to: '/pre-approved',
-      label: 'Pre-Approved Visitors',
-      icon: QrCode,
-      badge: activePassesCount > 0 ? { count: activePassesCount, variant: 'primary' } : null,
-    },
-    {
       to: '/services',
-      label: 'Home Services',
+      label: 'Services',
       icon: Wrench,
       badge: activeServicesCount > 0 ? { count: activeServicesCount, variant: 'warning' } : null,
     },

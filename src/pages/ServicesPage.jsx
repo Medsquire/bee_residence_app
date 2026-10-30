@@ -22,6 +22,7 @@ const STATUS_TABS = [
 
 const CATEGORIES = [
   'All Categories',
+  'Apartment Issues',
   'Plumbing',
   'Electrical Repairs',
   'Water Pump and Motor',
@@ -88,7 +89,7 @@ export default function ServicesPage() {
     <div className="space-y-5">
       {/* Page Header */}
       <PageHeader
-        title="Home Services & Repairs"
+        title="Services"
         badge={
           activeServicesCount > 0 ? (
             <Badge variant="warning" size="md">

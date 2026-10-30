@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, UserCheck, QrCode, Wrench, Menu } from 'lucide-react';
+import { LayoutDashboard, UserCheck, Wrench, Menu } from 'lucide-react';
 import { useHousehold } from '../../context/HouseholdContext';
 
 export default function MobileNav({ onOpenMenu }) {
@@ -38,18 +38,6 @@ export default function MobileNav({ onOpenMenu }) {
             )}
           </div>
           <span>Visitors</span>
-        </NavLink>
-
-        <NavLink
-          to="/pre-approved"
-          className={({ isActive }) =>
-            `flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-semibold transition-colors ${
-              isActive ? 'text-bee-600 font-bold' : 'text-slate-500 hover:text-navy-900'
-            }`
-          }
-        >
-          <QrCode className="w-5 h-5" />
-          <span>Passes</span>
         </NavLink>
 
         <NavLink

@@ -165,7 +165,7 @@ export default function DashboardPage() {
 
         {/* Upcoming Passes */}
         <div
-          onClick={() => navigate('/pre-approved')}
+          onClick={() => navigate('/visitors?tab=pre-approved')}
           className="bg-white rounded-2xl p-4 border border-slate-200/90 hover:border-amber-300 hover:shadow-card cursor-pointer transition-all duration-200 group"
         >
           <div className="flex items-center justify-between mb-2">
@@ -377,7 +377,7 @@ export default function DashboardPage() {
                 <div className="p-2 rounded-xl bg-sky-100 text-sky-800">
                   <Wrench className="w-4 h-4" />
                 </div>
-                <span>Book Home Service</span>
+                <span>Book Service</span>
               </div>
               <Plus className="w-4 h-4 text-slate-400" />
             </button>

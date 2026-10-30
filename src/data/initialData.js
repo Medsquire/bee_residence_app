@@ -403,7 +403,7 @@ export const INITIAL_NOTIFICATIONS = [
     priority: 'Low',
     relatedType: 'pass',
     relatedId: 'BEE-PASS-84920',
-    link: '/pre-approved'
+    link: '/visitors?tab=pre-approved'
   }
 ];
 

@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PageHeader from '../components/common/PageHeader';
 import SearchInput from '../components/common/SearchInput';
 import Badge from '../components/common/Badge';
@@ -7,18 +8,29 @@ import EmptyState from '../components/common/EmptyState';
 import VisitorCard from '../components/visitors/VisitorCard';
 import VisitorDetailsModal from '../components/visitors/VisitorDetailsModal';
 import VisitorDecisionModal from '../components/visitors/VisitorDecisionModal';
+import PassCard from '../components/passes/PassCard';
+import CreatePassModal from '../components/passes/CreatePassModal';
+import PassTicketModal from '../components/passes/PassTicketModal';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useToast } from '../context/ToastContext';
-import { UserCheck, Sparkles, Filter, ShieldAlert } from 'lucide-react';
+import { UserCheck, Sparkles, Filter, ShieldAlert, QrCode, Plus } from 'lucide-react';
 
 const TABS = [
   { id: 'all', label: 'All Visitors' },
   { id: 'Pending', label: 'Pending Approval' },
   { id: 'Approved', label: 'Approved' },
+  { id: 'pre-approved', label: 'Pre-Approved Visitors' },
   { id: 'Leave at Gate', label: 'Parcels at Gate' },
   { id: 'Rejected', label: 'Rejected' },
   { id: 'Completed', label: 'Completed' }
+];
+
+const PASS_STATUS_TABS = [
+  { id: 'all', label: 'All Passes' },
+  { id: 'Active', label: 'Active & Upcoming' },
+  { id: 'Used', label: 'Used' },
+  { id: 'Cancelled', label: 'Cancelled' }
 ];
 
 const CATEGORIES = [
@@ -32,15 +44,46 @@ const CATEGORIES = [
 
 export default function VisitorsPage() {
   const { currentUser } = useAuth();
-  const { visitors, pendingVisitorsCount, decideVisitor, simulateIncomingVisitor } = useHousehold();
+  const {
+    visitors,
+    pendingVisitorsCount,
+    decideVisitor,
+    simulateIncomingVisitor,
+    preApprovedPasses,
+    activePassesCount
+  } = useHousehold();
   const { addToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState('Pending');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'pre-approved' ? 'pre-approved' : 'Pending';
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [passStatusFilter, setPassStatusFilter] = useState('Active');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
   const [activeVisitorDetails, setActiveVisitorDetails] = useState(null);
   const [decisionModalData, setDecisionModalData] = useState({ isOpen: false, visitor: null, decision: null });
+
+  // Pre-approved pass modals
+  const [isCreatePassOpen, setIsCreatePassOpen] = useState(false);
+  const [selectedPass, setSelectedPass] = useState(null);
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'pre-approved') {
+      setActiveTab('pre-approved');
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (tabId === 'pre-approved') {
+      setSearchParams({ tab: 'pre-approved' }, { replace: true });
+    } else {
+      searchParams.delete('tab');
+      setSearchParams(searchParams, { replace: true });
+    }
+  };
 
   const handleSimulateVisitor = () => {
     const visitor = simulateIncomingVisitor();
@@ -105,27 +148,64 @@ export default function VisitorsPage() {
     });
   }, [visitors, activeTab, selectedCategory, searchQuery]);
 
+  // Filtered pre-approved passes list
+  const filteredPasses = useMemo(() => {
+    return preApprovedPasses.filter((p) => {
+      if (passStatusFilter !== 'all' && p.status !== passStatusFilter) {
+        return false;
+      }
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchName = p.guestName.toLowerCase().includes(query);
+        const matchId = p.id.toLowerCase().includes(query);
+        const matchOtp = p.otp.includes(query);
+        const matchVehicle = (p.vehicleNumber || '').toLowerCase().includes(query);
+        if (!matchName && !matchId && !matchOtp && !matchVehicle) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [preApprovedPasses, passStatusFilter, searchQuery]);
+
   return (
     <div className="space-y-5">
       {/* Page Header */}
       <PageHeader
         title="My Visitors"
         badge={
-          pendingVisitorsCount > 0 ? (
+          activeTab === 'pre-approved' ? (
+            activePassesCount > 0 ? (
+              <Badge variant="primary" size="md">
+                {activePassesCount} Active
+              </Badge>
+            ) : null
+          ) : pendingVisitorsCount > 0 ? (
             <Badge variant="danger" size="md">
               {pendingVisitorsCount} Pending
             </Badge>
           ) : null
         }
         action={
-          <Button
-            variant="gold"
-            size="md"
-            icon={Sparkles}
-            onClick={handleSimulateVisitor}
-          >
-            Simulate Visitor Arrival
-          </Button>
+          activeTab === 'pre-approved' ? (
+            <Button
+              variant="gold"
+              size="md"
+              icon={Plus}
+              onClick={() => setIsCreatePassOpen(true)}
+            >
+              Create Visitor Pass
+            </Button>
+          ) : (
+            <Button
+              variant="gold"
+              size="md"
+              icon={Sparkles}
+              onClick={handleSimulateVisitor}
+            >
+              Simulate Visitor Arrival
+            </Button>
+          )
         }
       />
 
@@ -136,12 +216,14 @@ export default function VisitorsPage() {
           const count =
             tab.id === 'all'
               ? visitors.length
+              : tab.id === 'pre-approved'
+              ? preApprovedPasses.length
               : visitors.filter((v) => v.status === tab.id).length;
 
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 isActive
                   ? 'bg-navy-900 text-white shadow-xs'
@@ -163,63 +245,137 @@ export default function VisitorsPage() {
         })}
       </div>
 
+      {/* Sub-tabs for Pre-Approved Passes */}
+      {activeTab === 'pre-approved' && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {PASS_STATUS_TABS.map((tab) => {
+            const isActive = passStatusFilter === tab.id;
+            const count =
+              tab.id === 'all'
+                ? preApprovedPasses.length
+                : preApprovedPasses.filter((p) => p.status === tab.id).length;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setPassStatusFilter(tab.id)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-slate-800 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-navy-900'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    isActive
+                      ? 'bg-bee-500 text-navy-950'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Filters & Search row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {activeTab === 'pre-approved' ? (
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Search by visitor name, company, vehicle plate..."
-          className="w-full sm:max-w-md"
+          placeholder="Search by guest name, pass number, OTP, or vehicle plate..."
+          className="max-w-md"
         />
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search by visitor name, company, vehicle plate..."
+            className="w-full sm:max-w-md"
+          />
 
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-bee-500"
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-bee-500"
+            >
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Visitors List Grid */}
-      <div className="space-y-3">
-        {filteredVisitors.map((visitor) => (
-          <VisitorCard
-            key={visitor.id}
-            visitor={visitor}
-            onInspect={(v) => setActiveVisitorDetails(v)}
-            onDecision={handleDecisionClick}
-          />
-        ))}
+      {/* Main Content Area */}
+      {activeTab === 'pre-approved' ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredPasses.map((pass) => (
+              <PassCard
+                key={pass.id}
+                pass={pass}
+                onViewPass={(p) => setSelectedPass(p)}
+              />
+            ))}
+          </div>
 
-        {filteredVisitors.length === 0 && (
-          <EmptyState
-            icon={UserCheck}
-            title={
-              activeTab === 'Pending'
-                ? 'No Pending Visitor Requests'
-                : 'No Visitors Found'
-            }
-            description={
-              activeTab === 'Pending'
-                ? 'All visitors have been processed. Use the "Simulate Visitor Arrival" button above to test new gate requests.'
-                : 'Try adjusting your search query or category filters to find records.'
-            }
-            actionLabel="Simulate Gate Arrival"
-            actionIcon={Sparkles}
-            onAction={handleSimulateVisitor}
-          />
-        )}
-      </div>
+          {filteredPasses.length === 0 && (
+            <EmptyState
+              icon={QrCode}
+              title={
+                passStatusFilter === 'Active'
+                  ? 'No Active Pre-Approved Passes'
+                  : 'No Visitor Passes Found'
+              }
+              description="Create advance visitor passes so your guests can enter effortlessly through gate QR verification or OTP entry."
+              actionLabel="Generate Guest Pass"
+              actionIcon={Plus}
+              onAction={() => setIsCreatePassOpen(true)}
+            />
+          )}
+        </>
+      ) : (
+        <div className="space-y-3">
+          {filteredVisitors.map((visitor) => (
+            <VisitorCard
+              key={visitor.id}
+              visitor={visitor}
+              onInspect={(v) => setActiveVisitorDetails(v)}
+              onDecision={handleDecisionClick}
+            />
+          ))}
 
-      {/* Modals */}
+          {filteredVisitors.length === 0 && (
+            <EmptyState
+              icon={UserCheck}
+              title={
+                activeTab === 'Pending'
+                  ? 'No Pending Visitor Requests'
+                  : 'No Visitors Found'
+              }
+              description={
+                activeTab === 'Pending'
+                  ? 'All visitors have been processed. Use the "Simulate Visitor Arrival" button above to test new gate requests.'
+                  : 'Try adjusting your search query or category filters to find records.'
+              }
+              actionLabel="Simulate Gate Arrival"
+              actionIcon={Sparkles}
+              onAction={handleSimulateVisitor}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Visitor Modals */}
       <VisitorDetailsModal
         isOpen={!!activeVisitorDetails}
         visitor={activeVisitorDetails}
@@ -237,6 +393,19 @@ export default function VisitorsPage() {
         decision={decisionModalData.decision}
         onClose={() => setDecisionModalData({ isOpen: false, visitor: null, decision: null })}
         onConfirm={handleConfirmDecision}
+      />
+
+      {/* Pre-Approved Pass Modals */}
+      <CreatePassModal
+        isOpen={isCreatePassOpen}
+        onClose={() => setIsCreatePassOpen(false)}
+        onPassCreated={(newPass) => setSelectedPass(newPass)}
+      />
+
+      <PassTicketModal
+        isOpen={!!selectedPass}
+        pass={selectedPass}
+        onClose={() => setSelectedPass(null)}
       />
     </div>
   );

@@ -64,7 +64,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="visitors" element={<VisitorsPage />} />
-        <Route path="pre-approved" element={<PreApprovedPage />} />
+        <Route path="pre-approved" element={<Navigate to="/visitors?tab=pre-approved" replace />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="vehicles" element={<VehiclesPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
