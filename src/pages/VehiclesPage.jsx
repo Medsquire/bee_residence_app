@@ -29,24 +29,25 @@ export default function VehiclesPage() {
   }, [vehicles, searchQuery]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {/* Header */}
       <PageHeader
         title="My Vehicles & Parking"
         badge={
-          <Badge variant="neutral" size="md">
+          <Badge variant="primary" size="md">
             {vehiclesCount} Registered
           </Badge>
         }
         action={
           <Button
-            variant="gold"
+            variant="primary"
             size="md"
             icon={Plus}
             onClick={() => {
               setVehicleToEdit(null);
               setIsFormOpen(true);
             }}
+            className="w-full sm:w-auto text-xs sm:text-sm"
           >
             Register Vehicle
           </Button>
@@ -54,39 +55,39 @@ export default function VehiclesPage() {
       />
 
       {/* Household Parking Slots Overview Pill */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+          <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider block">
             Designated Apartment Parking Slots
           </span>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            {household.parkingSlots?.map((slot, i) => (
-              <span
-                key={i}
-                className="font-mono text-xs font-bold text-navy-900 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 flex items-center gap-1.5"
-              >
-                <MapPin className="w-3.5 h-3.5 text-bee-600" />
-                {slot}
-              </span>
-            ))}
-          </div>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Allocated exclusively to Flat 1204 under Bee Hive Residency By-laws.
+          </p>
         </div>
 
-        <div className="text-xs text-slate-500 max-w-xs">
-          Automatic RFID gate clearance is enabled for all registered household plates.
+        <div className="flex items-center gap-2 flex-wrap">
+          {household?.parkingSlots?.map((slot) => (
+            <div
+              key={slot}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-950 border border-blue-200 text-xs font-mono font-bold shadow-xs"
+            >
+              <MapPin className="w-3.5 h-3.5 text-blue-600" />
+              <span>{slot}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Input */}
       <SearchInput
         value={searchQuery}
         onChange={setSearchQuery}
-        placeholder="Search by license plate, make & model, or owner..."
-        className="max-w-md"
+        placeholder="Search by license plate, make, model, or owner..."
+        className="max-w-md w-full"
       />
 
       {/* Vehicles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {filteredVehicles.map((vehicle) => (
           <VehicleCard
             key={vehicle.id}
@@ -103,7 +104,11 @@ export default function VehiclesPage() {
         <EmptyState
           icon={Car}
           title="No Vehicles Registered"
-          description="Register your 4-wheeler, 2-wheeler, or EV to receive automated boom barrier entry clearance and parking validation."
+          description={
+            vehicles.length === 0
+              ? 'No vehicles registered for Flat 1204 yet. Add your car, two-wheeler, or EV for automatic security barrier clearance.'
+              : 'No vehicles match your current search query.'
+          }
           actionLabel="Register Vehicle"
           actionIcon={Plus}
           onAction={() => {
@@ -113,14 +118,14 @@ export default function VehiclesPage() {
         />
       )}
 
-      {/* Add / Edit Form Modal */}
+      {/* Vehicle Form Modal */}
       <VehicleFormModal
         isOpen={isFormOpen}
+        vehicleToEdit={vehicleToEdit}
         onClose={() => {
           setIsFormOpen(false);
           setVehicleToEdit(null);
         }}
-        vehicleToEdit={vehicleToEdit}
       />
     </div>
   );

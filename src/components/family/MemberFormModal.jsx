@@ -102,8 +102,8 @@ export default function MemberFormModal({ isOpen, onClose, memberToEdit = null }
       }
 
       addToast({
-        title: 'Member Added!',
-        message: `${formData.name} invited to Flat 1204.`,
+        title: 'Family Member Invited!',
+        message: `${formData.name} added to Flat 1204. Shared gate access granted.`,
         type: 'success'
       });
       onClose();
@@ -115,115 +115,109 @@ export default function MemberFormModal({ isOpen, onClose, memberToEdit = null }
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Edit Household Member' : 'Add Household Member'}
-      subtitle="Household members can view visitor requests, create passes, and track services."
-      maxWidth="max-w-md"
+      title={isEditing ? 'Edit Family Member' : 'Invite Family Member'}
+      subtitle="Household members can approve gate arrivals, book services, and create guest passes."
+      maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Full Name */}
         <div>
-          <label className="block text-xs font-bold text-navy-900 mb-1.5">
+          <label className="block text-xs font-bold text-blue-950 mb-1.5">
             Full Name <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <User className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="e.g. Sunita Kumar"
-              className={`w-full pl-9 pr-3.5 py-2 text-xs bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 ${
-                errors.name ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+              placeholder="e.g. Ananya Kumar"
+              className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                errors.name ? 'border-rose-400 bg-rose-50/20' : ''
               }`}
             />
           </div>
-          {errors.name && <p className="text-[11px] text-rose-500 mt-1">{errors.name}</p>}
+          {errors.name && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.name}</p>}
         </div>
 
-        {/* Mobile Phone */}
-        <div>
-          <label className="block text-xs font-bold text-navy-900 mb-1.5">
-            Mobile Phone Number <span className="text-rose-500">*</span>
-          </label>
-          <div className="relative">
-            <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="10-digit mobile number"
-              className={`w-full pl-9 pr-3.5 py-2 text-xs bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 ${
-                errors.phone ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
-              }`}
-            />
-          </div>
-          {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone}</p>}
-        </div>
-
-        {/* Relationship & Role */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Phone & Relationship */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+              Phone Number <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <Phone className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="10-digit number"
+                className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                  errors.phone ? 'border-rose-400 bg-rose-50/20' : ''
+                }`}
+              />
+            </div>
+            {errors.phone && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.phone}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
               Relationship <span className="text-rose-500">*</span>
             </label>
             <select
               name="relationship"
               value={formData.relationship}
               onChange={handleChange}
-              className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-bee-500"
+              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
             >
-              {RELATIONSHIPS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
+              {RELATIONSHIPS.map((rel) => (
+                <option key={rel} value={rel}>
+                  {rel}
                 </option>
               ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
-              Household Role
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              disabled={memberToEdit?.isHead}
-              className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-bee-500 disabled:bg-slate-100"
-            >
-              <option value="MEMBER">Household Member</option>
-              <option value="HEAD">Household Head</option>
             </select>
           </div>
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-xs font-bold text-navy-900 mb-1.5">
+          <label className="block text-xs font-bold text-blue-950 mb-1.5">
             Email Address (Optional)
           </label>
           <div className="relative">
-            <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Mail className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="e.g. member@example.com"
-              className="w-full pl-9 pr-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+              placeholder="e.g. ananya@example.com"
+              className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
             />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting}>
+        {/* Role permission preview pill */}
+        <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-start gap-2.5 text-xs">
+          <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-blue-950">Household Member Permissions</p>
+            <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
+              Family members can take live decisions for courier arrivals, request maintenance, and view apartment notices.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer buttons */}
+        <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-3 border-t border-blue-100">
+          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button variant="gold" size="md" type="submit" loading={submitting}>
-            {isEditing ? 'Save Changes' : 'Add Member'}
+          <Button variant="primary" size="md" type="submit" loading={submitting} className="w-full sm:w-auto">
+            {isEditing ? 'Save Changes' : 'Invite to Household'}
           </Button>
         </div>
       </form>

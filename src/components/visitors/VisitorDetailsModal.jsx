@@ -13,37 +13,40 @@ import {
   Building,
   CheckCircle2,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Check,
+  X
 } from 'lucide-react';
 
 export default function VisitorDetailsModal({ visitor, isOpen, onClose, onActionClick }) {
   if (!visitor) return null;
 
   const statusVariants = {
-    Pending: 'warning',
+    Pending: 'primary',
     Approved: 'success',
+    'Leave at Gate': 'gold',
     Rejected: 'danger',
     Completed: 'neutral'
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Visitor Entry Details" maxWidth="max-w-lg">
-      <div className="space-y-5">
+      <div className="space-y-4 sm:space-y-5">
         {/* Visitor Profile Header */}
-        <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+        <div className="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
           <img
             src={visitor.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'}
             alt={visitor.name}
-            className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-sm shrink-0"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover ring-2 ring-white shadow-xs shrink-0"
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="font-bold text-navy-900 text-base truncate">{visitor.name}</h4>
+              <h4 className="font-bold text-blue-950 text-sm sm:text-base truncate">{visitor.name}</h4>
               <Badge variant={statusVariants[visitor.status] || 'neutral'}>
                 {visitor.status}
               </Badge>
             </div>
-            <p className="text-xs font-semibold text-bee-700 mt-0.5">{visitor.category}</p>
+            <p className="text-xs font-bold text-blue-600 mt-0.5">{visitor.category}</p>
             {visitor.company && (
               <p className="text-xs text-slate-500 font-medium">{visitor.company}</p>
             )}
@@ -51,115 +54,88 @@ export default function VisitorDetailsModal({ visitor, isOpen, onClose, onAction
         </div>
 
         {/* Detailed Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="p-3 rounded-xl bg-white border border-slate-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-xs">
+          <div className="p-3 rounded-xl bg-white/80 border border-blue-100 shadow-xs">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Clock className="w-3.5 h-3.5 text-bee-600" />
+              <Clock className="w-3.5 h-3.5 text-blue-600" />
               <span className="font-semibold text-slate-600">Arrival Time</span>
             </div>
-            <p className="font-bold text-navy-900">{formatDate(visitor.arrivedAt)}</p>
+            <p className="font-bold text-blue-950">{formatDate(visitor.arrivedAt)}</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-white border border-slate-200">
+          <div className="p-3 rounded-xl bg-white/80 border border-blue-100 shadow-xs">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Phone className="w-3.5 h-3.5 text-bee-600" />
+              <Phone className="w-3.5 h-3.5 text-blue-600" />
               <span className="font-semibold text-slate-600">Visitor Contact</span>
             </div>
-            <p className="font-bold text-navy-900">{visitor.phone || 'Not provided'}</p>
+            <p className="font-bold text-blue-950">{visitor.phone || 'Not provided'}</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-white border border-slate-200">
+          <div className="p-3 rounded-xl bg-white/80 border border-blue-100 shadow-xs">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Car className="w-3.5 h-3.5 text-bee-600" />
-              <span className="font-semibold text-slate-600">Vehicle Number</span>
+              <Car className="w-3.5 h-3.5 text-blue-600" />
+              <span className="font-semibold text-slate-600">Vehicle / Transport</span>
             </div>
-            <p className="font-mono font-bold text-navy-900">{visitor.vehicleNumber || 'None (Pedestrian)'}</p>
+            <p className="font-bold text-blue-950">{visitor.vehicleNumber || 'Walk-in'}</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-white border border-slate-200">
+          <div className="p-3 rounded-xl bg-white/80 border border-blue-100 shadow-xs">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Shield className="w-3.5 h-3.5 text-bee-600" />
-              <span className="font-semibold text-slate-600">Gate & Guard</span>
+              <Shield className="w-3.5 h-3.5 text-blue-600" />
+              <span className="font-semibold text-slate-600">Check-in Point</span>
             </div>
-            <p className="font-bold text-navy-900">{visitor.gateNumber}</p>
-            <p className="text-[11px] text-slate-500 truncate">{visitor.guardName}</p>
+            <p className="font-bold text-blue-950">{visitor.gateNumber || 'Gate 1'}</p>
           </div>
         </div>
 
-        {/* Purpose & Items */}
-        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-          <div>
-            <span className="font-semibold text-slate-500">Visit Purpose:</span>
-            <p className="text-slate-800 font-medium mt-0.5">{visitor.purpose || 'General Visit'}</p>
-          </div>
-          {visitor.itemsToLeave && (
-            <div className="pt-2 border-t border-slate-200/80">
-              <span className="font-semibold text-slate-500">Parcels / Items:</span>
-              <p className="text-slate-800 font-medium mt-0.5 flex items-center gap-1.5">
-                <Package className="w-3.5 h-3.5 text-amber-600" />
-                {visitor.itemsToLeave}
-              </p>
-            </div>
-          )}
+        {/* Purpose */}
+        <div className="p-3.5 rounded-xl bg-white/80 border border-blue-100 shadow-xs text-xs">
+          <p className="font-bold text-slate-500 mb-1">Visit Purpose / Guard Notes</p>
+          <p className="text-blue-950 font-medium leading-relaxed">
+            {visitor.purpose || 'Standard flat visitor delivery/check-in.'}
+          </p>
         </div>
 
-        {/* Decision Status Record */}
-        {visitor.status !== 'Pending' && (
-          <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs">
-            <div className="flex items-center gap-2 font-bold text-slate-800">
-              {visitor.status === 'Approved' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              ) : visitor.status === 'Rejected' ? (
-                <XCircle className="w-4 h-4 text-rose-600" />
-              ) : (
-                <Package className="w-4 h-4 text-amber-600" />
-              )}
-              <span>Decision: {visitor.status}</span>
+        {/* Parcel Note */}
+        {visitor.itemsToLeave && (
+          <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-xs">
+            <div className="flex items-center gap-2 text-blue-900 font-bold mb-0.5">
+              <Package className="w-4 h-4 text-blue-600" />
+              <span>Parcel / Package Instruction</span>
             </div>
-            <p className="text-slate-600 mt-1">
-              Authorized by <strong className="text-navy-900">{visitor.decisionBy || 'Household Member'}</strong> on{' '}
-              {formatDate(visitor.decidedAt)}.
-            </p>
-            {visitor.decisionNote && (
-              <p className="text-slate-500 italic mt-1 bg-white p-2 rounded-lg border border-slate-200">
-                "{visitor.decisionNote}"
-              </p>
-            )}
+            <p className="text-blue-950">{visitor.itemsToLeave}</p>
           </div>
         )}
 
-        {/* Actions if Pending */}
-        {visitor.status === 'Pending' && (
-          <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-slate-100">
+        {/* Actions for Pending Visitor */}
+        {visitor.status === 'Pending' && onActionClick && (
+          <div className="pt-2 border-t border-blue-100 flex flex-col sm:flex-row items-center justify-end gap-2">
             <Button
-              variant="success"
-              className="flex-1"
-              onClick={() => {
-                onClose();
-                onActionClick('Approved');
-              }}
+              variant="danger"
+              size="md"
+              icon={X}
+              onClick={() => onActionClick('Rejected')}
+              className="w-full sm:w-auto"
             >
-              Approve Entry
+              Reject Entry
             </Button>
             <Button
-              variant="warning"
-              className="flex-1"
-              onClick={() => {
-                onClose();
-                onActionClick('Leave at Gate');
-              }}
+              variant="secondary"
+              size="md"
+              icon={Package}
+              onClick={() => onActionClick('Leave at Gate')}
+              className="w-full sm:w-auto"
             >
               Leave at Gate
             </Button>
             <Button
-              variant="danger"
-              className="flex-1"
-              onClick={() => {
-                onClose();
-                onActionClick('Rejected');
-              }}
+              variant="primary"
+              size="md"
+              icon={Check}
+              onClick={() => onActionClick('Approved')}
+              className="w-full sm:w-auto"
             >
-              Reject Entry
+              Approve Entry
             </Button>
           </div>
         )}

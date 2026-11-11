@@ -8,39 +8,56 @@ export default {
   theme: {
     extend: {
       colors: {
+        // White & Blue Theme Palette
         navy: {
-          50: '#F0F4F8',
-          100: '#D9E2EC',
-          200: '#BCCCDC',
-          300: '#9FB3C8',
-          400: '#627D98',
-          500: '#334E68',
-          600: '#243B53',
-          700: '#1C2541',
-          800: '#101B30',
-          900: '#0B132B',
-          950: '#060B18'
+          50: '#F0F6FF',
+          100: '#E0EDFE',
+          200: '#BAE0FD',
+          300: '#7DC4FB',
+          400: '#38A4F7',
+          500: '#0E85EC',
+          600: '#0267CA',
+          700: '#0352A3',
+          800: '#074585',
+          900: '#0A396E',
+          950: '#08254A'
         },
+        // Re-routed bee palette to clean electric and sapphire blues so any legacy references become white & blue
         bee: {
-          50: '#FFFDF5',
-          100: '#FFFBEB',
-          200: '#FEF3C7',
-          300: '#FDE68A',
-          400: '#FCD34D',
-          500: '#F59E0B',
-          600: '#D97706',
-          700: '#B45309',
-          800: '#92400E',
-          900: '#78350F'
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A'
+        },
+        glass: {
+          white: 'rgba(255, 255, 255, 0.78)',
+          'white-hover': 'rgba(255, 255, 255, 0.92)',
+          border: 'rgba(255, 255, 255, 0.85)',
+          blue: 'rgba(37, 99, 235, 0.08)',
+          'blue-border': 'rgba(147, 197, 253, 0.45)'
         }
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 4px 20px -2px rgba(11, 19, 43, 0.08)',
-        'glow': '0 0 25px -5px rgba(245, 158, 11, 0.4)',
+        'soft': '0 4px 20px -2px rgba(37, 99, 235, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03)',
+        'card': '0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.03)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.08)',
+        'glass-lg': '0 14px 40px -4px rgba(37, 99, 235, 0.12), 0 6px 16px -2px rgba(0, 0, 0, 0.04)',
+        'glow': '0 0 25px -3px rgba(37, 99, 235, 0.35)',
+        'glow-sky': '0 0 25px -3px rgba(56, 189, 248, 0.4)',
+      },
+      backdropBlur: {
+        'xs': '2px',
+        '2xl': '24px',
+        '3xl': '32px'
       }
     },
   },

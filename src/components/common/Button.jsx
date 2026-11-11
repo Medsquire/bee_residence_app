@@ -13,23 +13,23 @@ export default function Button({
   className = '',
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   const variantStyles = {
-    primary: 'bg-navy-900 text-white hover:bg-navy-800 focus:ring-navy-900 shadow-sm',
-    gold: 'bg-bee-500 text-navy-950 font-semibold hover:bg-bee-600 focus:ring-bee-500 shadow-sm hover:shadow-glow',
-    secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-300 shadow-xs',
+    primary: 'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 focus:ring-blue-500 shadow-md shadow-blue-500/20 border border-blue-400/30',
+    gold: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-md shadow-blue-500/20',
+    secondary: 'bg-white/85 backdrop-blur-md text-blue-950 border border-blue-200/90 hover:bg-white hover:border-blue-300 focus:ring-blue-300 shadow-xs',
     success: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm',
     danger: 'bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-sm',
-    warning: 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-400 shadow-sm',
-    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-200',
-    outline: 'border border-navy-300 text-navy-800 hover:bg-navy-50 focus:ring-navy-300'
+    warning: 'bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-500 shadow-sm',
+    ghost: 'bg-transparent text-slate-600 hover:bg-blue-50/80 hover:text-blue-700 focus:ring-blue-200',
+    outline: 'border border-blue-300 text-blue-700 hover:bg-blue-50/80 focus:ring-blue-300'
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2.5'
+    sm: 'text-xs px-3 py-1.5 gap-1.5 min-h-[34px]',
+    md: 'text-sm px-4 py-2 gap-2 min-h-[42px]',
+    lg: 'text-base px-5 py-2.5 gap-2.5 min-h-[46px]'
   };
 
   return (

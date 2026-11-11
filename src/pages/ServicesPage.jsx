@@ -86,106 +86,107 @@ export default function ServicesPage() {
   }, [serviceRequests, activeTab, selectedCategory, searchQuery]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {/* Page Header */}
       <PageHeader
         title="Services"
         badge={
           activeServicesCount > 0 ? (
-            <Badge variant="warning" size="md">
+            <Badge variant="primary" size="md">
               {activeServicesCount} Active Tickets
             </Badge>
           ) : null
         }
         action={
           <Button
-            variant="gold"
+            variant="primary"
             size="md"
             icon={Plus}
             onClick={() => setIsFormOpen(true)}
+            className="w-full sm:w-auto text-xs sm:text-sm"
           >
             Add Service Request
           </Button>
         }
       />
 
-      {/* Summary Cards Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* Summary Cards Row - 3 cols on mobile, 6 on desktop */}
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
         <div
           onClick={() => setActiveTab('all')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'all'
-              ? 'bg-navy-900 text-white border-navy-900 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">Total</span>
-          <span className="text-xl font-black">{serviceRequests.length}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Total</span>
+          <span className="text-lg sm:text-xl font-black">{serviceRequests.length}</span>
         </div>
 
         <div
           onClick={() => setActiveTab('Pending')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'Pending'
-              ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-amber-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">Pending</span>
-          <span className="text-xl font-black text-amber-600">{pendingCount}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Pending</span>
+          <span className="text-lg sm:text-xl font-black text-blue-600">{pendingCount}</span>
         </div>
 
         <div
           onClick={() => setActiveTab('Approved')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'Approved'
-              ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-sky-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">Approved</span>
-          <span className="text-xl font-black text-sky-600">{approvedCount}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Approved</span>
+          <span className="text-lg sm:text-xl font-black text-sky-600">{approvedCount}</span>
         </div>
 
         <div
           onClick={() => setActiveTab('Scheduled')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'Scheduled'
-              ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-purple-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">Scheduled</span>
-          <span className="text-xl font-black text-purple-600">{scheduledCount}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Scheduled</span>
+          <span className="text-lg sm:text-xl font-black text-indigo-600">{scheduledCount}</span>
         </div>
 
         <div
           onClick={() => setActiveTab('In Progress')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'In Progress'
-              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">In Progress</span>
-          <span className="text-xl font-black text-blue-600">{inProgressCount}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">In Progress</span>
+          <span className="text-lg sm:text-xl font-black text-blue-700">{inProgressCount}</span>
         </div>
 
         <div
           onClick={() => setActiveTab('Completed')}
-          className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
             activeTab === 'Completed'
-              ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-              : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
+              : 'glass-card text-slate-700 hover:border-blue-200'
           }`}
         >
-          <span className="text-[11px] font-semibold opacity-80 block">Completed</span>
-          <span className="text-xl font-black text-emerald-600">{completedCount}</span>
+          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Completed</span>
+          <span className="text-lg sm:text-xl font-black text-blue-800">{completedCount}</span>
         </div>
       </div>
 
       {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
@@ -194,11 +195,11 @@ export default function ServicesPage() {
         />
 
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+          <Filter className="w-4 h-4 text-blue-500 shrink-0" />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-bee-500"
+            className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -210,7 +211,7 @@ export default function ServicesPage() {
       </div>
 
       {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {filteredServices.map((ticket) => (
           <ServiceCard
             key={ticket.id}

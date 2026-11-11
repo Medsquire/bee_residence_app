@@ -169,7 +169,7 @@ export default function VisitorsPage() {
   }, [preApprovedPasses, passStatusFilter, searchQuery]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {/* Page Header */}
       <PageHeader
         title="My Visitors"
@@ -181,7 +181,7 @@ export default function VisitorsPage() {
               </Badge>
             ) : null
           ) : pendingVisitorsCount > 0 ? (
-            <Badge variant="danger" size="md">
+            <Badge variant="primary" size="md">
               {pendingVisitorsCount} Pending
             </Badge>
           ) : null
@@ -189,28 +189,30 @@ export default function VisitorsPage() {
         action={
           activeTab === 'pre-approved' ? (
             <Button
-              variant="gold"
+              variant="primary"
               size="md"
               icon={Plus}
               onClick={() => setIsCreatePassOpen(true)}
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
               Create Visitor Pass
             </Button>
           ) : (
             <Button
-              variant="gold"
+              variant="primary"
               size="md"
               icon={Sparkles}
               onClick={handleSimulateVisitor}
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
-              Simulate Visitor Arrival
+              Simulate Gate Visitor
             </Button>
           )
         }
       />
 
-      {/* Tabs bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
+      {/* Tabs bar - Horizontal sliding on mobile */}
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 border-b border-blue-100">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const count =
@@ -224,18 +226,18 @@ export default function VisitorsPage() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
                 isActive
-                  ? 'bg-navy-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-navy-900'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                  : 'glass-card text-slate-700 hover:text-blue-600 hover:border-blue-200'
               }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
                   isActive
-                    ? 'bg-bee-500 text-navy-950'
-                    : 'bg-slate-200 text-slate-700'
+                    ? 'bg-white text-blue-700'
+                    : 'bg-blue-50 text-blue-700'
                 }`}
               >
                 {count}
@@ -247,7 +249,7 @@ export default function VisitorsPage() {
 
       {/* Sub-tabs for Pre-Approved Passes */}
       {activeTab === 'pre-approved' && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1">
           {PASS_STATUS_TABS.map((tab) => {
             const isActive = passStatusFilter === tab.id;
             const count =
@@ -259,18 +261,18 @@ export default function VisitorsPage() {
               <button
                 key={tab.id}
                 onClick={() => setPassStatusFilter(tab.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-slate-800 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-navy-900'
+                    ? 'bg-blue-700 text-white font-bold shadow-xs'
+                    : 'glass-card text-slate-600 hover:text-blue-700'
                 }`}
               >
                 <span>{tab.label}</span>
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                     isActive
-                      ? 'bg-bee-500 text-navy-950'
-                      : 'bg-slate-100 text-slate-600'
+                      ? 'bg-white text-blue-700'
+                      : 'bg-blue-50 text-blue-700'
                   }`}
                 >
                   {count}
@@ -287,10 +289,10 @@ export default function VisitorsPage() {
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="Search by guest name, pass number, OTP, or vehicle plate..."
-          className="max-w-md"
+          className="max-w-md w-full"
         />
       ) : (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
@@ -299,11 +301,11 @@ export default function VisitorsPage() {
           />
 
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+            <Filter className="w-4 h-4 text-blue-500 shrink-0" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-bee-500"
+              className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -318,7 +320,7 @@ export default function VisitorsPage() {
       {/* Main Content Area */}
       {activeTab === 'pre-approved' ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             {filteredPasses.map((pass) => (
               <PassCard
                 key={pass.id}
@@ -364,7 +366,7 @@ export default function VisitorsPage() {
               }
               description={
                 activeTab === 'Pending'
-                  ? 'All visitors have been processed. Use the "Simulate Visitor Arrival" button above to test new gate requests.'
+                  ? 'All visitors have been processed. Use the "Simulate Gate Visitor" button above to test new gate requests.'
                   : 'Try adjusting your search query or category filters to find records.'
               }
               actionLabel="Simulate Gate Arrival"

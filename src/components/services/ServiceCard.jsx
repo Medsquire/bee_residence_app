@@ -14,13 +14,13 @@ import {
 export default function ServiceCard({ ticket, onInspect }) {
   const urgencyVariants = {
     Urgent: 'danger',
-    High: 'warning',
+    High: 'primary',
     Normal: 'neutral',
     'Can Wait': 'neutral'
   };
 
   const statusVariants = {
-    Pending: 'warning',
+    Pending: 'primary',
     Approved: 'info',
     Scheduled: 'gold',
     'In Progress': 'primary',
@@ -29,15 +29,15 @@ export default function ServiceCard({ ticket, onInspect }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 hover:shadow-card transition-all duration-200 p-5 flex flex-col justify-between">
+    <div className="glass-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs">
       <div>
         {/* Header badges */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
               {ticket.id}
             </span>
-            <span className="text-xs font-bold text-navy-800 bg-navy-50 px-2 py-0.5 rounded-md border border-navy-100">
+            <span className="text-xs font-bold text-blue-950 bg-white/80 px-2 py-0.5 rounded-md border border-blue-100">
               {ticket.category}
             </span>
           </div>
@@ -47,7 +47,7 @@ export default function ServiceCard({ ticket, onInspect }) {
         </div>
 
         {/* Title & description */}
-        <h4 className="font-bold text-navy-900 text-sm sm:text-base leading-snug line-clamp-1">
+        <h4 className="font-bold text-blue-950 text-sm sm:text-base leading-snug line-clamp-1">
           {ticket.title}
         </h4>
         <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
@@ -55,26 +55,26 @@ export default function ServiceCard({ ticket, onInspect }) {
         </p>
 
         {/* Details snippet */}
-        <div className="mt-4 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-600">
+        <div className="mt-4 pt-3 border-t border-blue-100/70 space-y-1.5 text-xs text-slate-600">
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">Urgency:</span>
+            <span className="text-slate-400 font-medium">Urgency:</span>
             <Badge variant={urgencyVariants[ticket.urgency] || 'neutral'} size="sm">
               {ticket.urgency}
             </Badge>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-slate-400">Preferred Slot:</span>
-            <span className="font-semibold text-slate-800">
+            <span className="text-slate-400 font-medium">Preferred Slot:</span>
+            <span className="font-semibold text-blue-950">
               {ticket.preferredDate} ({ticket.preferredTimeSlot.split(' ')[0]})
             </span>
           </div>
 
           {ticket.technician && (
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Technician:</span>
-              <span className="font-bold text-navy-900 flex items-center gap-1">
-                <UserCheck className="w-3.5 h-3.5 text-bee-600" />
+              <span className="text-slate-400 font-medium">Technician:</span>
+              <span className="font-bold text-blue-950 flex items-center gap-1">
+                <UserCheck className="w-3.5 h-3.5 text-blue-600" />
                 {ticket.technician.name}
               </span>
             </div>
@@ -83,14 +83,14 @@ export default function ServiceCard({ ticket, onInspect }) {
       </div>
 
       {/* Footer Inspect Button */}
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+      <div className="mt-4 pt-3 border-t border-blue-100/70 flex items-center justify-between">
         <span className="text-[11px] text-slate-400">
           Logged {formatDate(ticket.createdAt, false)}
         </span>
         <button
           type="button"
           onClick={() => onInspect(ticket)}
-          className="inline-flex items-center gap-1 text-xs font-bold text-navy-900 hover:text-bee-600 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
         >
           <span>Inspect Booking</span>
           <ChevronRight className="w-3.5 h-3.5" />

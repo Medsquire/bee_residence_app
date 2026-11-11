@@ -65,12 +65,12 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       <PageHeader
-        title="Notifications & Community Alerts"
+        title="Notifications"
         badge={
           unreadNotificationsCount > 0 ? (
-            <Badge variant="danger" size="md">
+            <Badge variant="primary" size="md">
               {unreadNotificationsCount} Unread
             </Badge>
           ) : null
@@ -82,6 +82,7 @@ export default function NotificationsPage() {
               size="md"
               icon={CheckCheck}
               onClick={handleMarkAllRead}
+              className="w-full sm:w-auto text-xs sm:text-sm"
             >
               Mark all as read
             </Button>
@@ -89,8 +90,8 @@ export default function NotificationsPage() {
         }
       />
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
+      {/* Filter Tabs - Mobile friendly horizontal sliding */}
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 border-b border-blue-100">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const count =
@@ -104,18 +105,18 @@ export default function NotificationsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
                 isActive
-                  ? 'bg-navy-900 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-navy-900'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                  : 'glass-card text-slate-700 hover:text-blue-600 hover:border-blue-200'
               }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
                   isActive
-                    ? 'bg-bee-500 text-navy-950'
-                    : 'bg-slate-200 text-slate-700'
+                    ? 'bg-white text-blue-700'
+                    : 'bg-blue-50 text-blue-700'
                 }`}
               >
                 {count}
@@ -133,30 +134,30 @@ export default function NotificationsPage() {
           return (
             <div
               key={item.id}
-              className={`p-4 rounded-2xl border transition-all duration-200 flex items-start justify-between gap-3 ${
+              className={`p-3.5 sm:p-4 rounded-2xl glass-card transition-all duration-200 flex items-start justify-between gap-3 shadow-xs ${
                 !item.isRead
-                  ? 'bg-amber-50/50 border-amber-300/80 shadow-xs ring-1 ring-amber-100'
-                  : 'bg-white border-slate-200/90 hover:border-slate-300'
+                  ? 'border-blue-300 ring-2 ring-blue-100 bg-white/90'
+                  : 'hover:border-blue-200'
               }`}
             >
-              <div className="flex items-start gap-3.5 min-w-0 flex-1">
+              <div className="flex items-start gap-3 sm:gap-3.5 min-w-0 flex-1">
                 <div
-                  className={`p-2.5 rounded-xl shrink-0 ${
+                  className={`p-2 sm:p-2.5 rounded-xl shrink-0 ${
                     item.category === 'Visitors'
-                      ? 'bg-amber-100 text-amber-800'
+                      ? 'bg-blue-50 text-blue-600 border border-blue-100'
                       : item.category === 'Services'
-                      ? 'bg-sky-100 text-sky-800'
-                      : 'bg-purple-100 text-purple-800'
+                      ? 'bg-sky-50 text-sky-600 border border-sky-100'
+                      : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4
                       className={`text-xs sm:text-sm ${
-                        !item.isRead ? 'font-black text-navy-900' : 'font-bold text-slate-800'
+                        !item.isRead ? 'font-black text-blue-950' : 'font-bold text-slate-800'
                       }`}
                     >
                       {item.title}
@@ -165,7 +166,7 @@ export default function NotificationsPage() {
                       • {getTimeAgo(item.timestamp)}
                     </span>
                     {!item.isRead && (
-                      <span className="h-2 w-2 rounded-full bg-rose-500"></span>
+                      <span className="h-2 w-2 rounded-full bg-blue-600"></span>
                     )}
                   </div>
 
@@ -180,7 +181,7 @@ export default function NotificationsPage() {
                         markNotificationRead(item.id);
                         navigate(item.link);
                       }}
-                      className="mt-2 text-xs font-bold text-bee-700 hover:text-bee-800 inline-flex items-center gap-1"
+                      className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
                     >
                       <span>Take Action / View Details</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -195,7 +196,7 @@ export default function NotificationsPage() {
                   <button
                     type="button"
                     onClick={() => markNotificationRead(item.id)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-bee-600 hover:bg-slate-100 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                     title="Mark as read"
                   >
                     <CheckCheck className="w-4 h-4" />

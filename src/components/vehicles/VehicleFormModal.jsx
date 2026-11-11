@@ -66,7 +66,6 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
     if (!formData.registrationNumber.trim()) {
       newErrors.registrationNumber = 'Registration number is required.';
     } else {
-      // Basic validation for license plate
       const cleaned = formData.registrationNumber.replace(/\s+/g, '');
       if (cleaned.length < 6) {
         newErrors.registrationNumber = 'Please enter a valid registration number (e.g. KA 01 MJ 4521).';
@@ -137,13 +136,13 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Edit Vehicle Details' : 'Register New Vehicle'}
-      subtitle="Registered vehicles receive automatic gate RFID tag clearance and designated parking."
+      subtitle="Registered vehicles receive automatic gate RFID clearance and designated parking."
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Vehicle Type selection */}
         <div>
-          <label className="block text-xs font-bold text-navy-900 mb-1.5">
+          <label className="block text-xs font-bold text-blue-950 mb-1.5">
             Vehicle Type <span className="text-rose-500">*</span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -152,14 +151,14 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
                 key={t}
                 type="button"
                 onClick={() => setFormData((prev) => ({ ...prev, type: t }))}
-                className={`p-2.5 rounded-xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${
+                className={`p-2.5 rounded-xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all shadow-xs ${
                   formData.type === t
-                    ? 'border-bee-500 bg-amber-50 text-navy-950 ring-2 ring-bee-400/40'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? 'border-blue-500 bg-blue-50 text-blue-950 ring-2 ring-blue-400/40'
+                    : 'glass-card text-slate-600 hover:border-blue-200'
                 }`}
               >
-                {t === 'Car' && <Car className="w-4 h-4 text-navy-900" />}
-                {t === 'Two-Wheeler' && <Bike className="w-4 h-4 text-navy-900" />}
+                {t === 'Car' && <Car className="w-4 h-4 text-blue-600" />}
+                {t === 'Two-Wheeler' && <Bike className="w-4 h-4 text-blue-600" />}
                 {t === 'Electric Vehicle' && <Zap className="w-4 h-4 text-emerald-600" />}
                 {t === 'Other' && <Car className="w-4 h-4 text-slate-500" />}
                 <span className="truncate">{t}</span>
@@ -169,30 +168,28 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
         </div>
 
         {/* Plate Number & Make/Model */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
               Registration Plate <span className="text-rose-500">*</span>
             </label>
-            <div className="relative">
-              <input
-                type="text"
-                name="registrationNumber"
-                value={formData.registrationNumber}
-                onChange={handleChange}
-                placeholder="e.g. KA 01 MJ 4521"
-                className={`w-full px-3.5 py-2 text-xs font-mono font-bold uppercase bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 ${
-                  errors.registrationNumber ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
-                }`}
-              />
-            </div>
+            <input
+              type="text"
+              name="registrationNumber"
+              value={formData.registrationNumber}
+              onChange={handleChange}
+              placeholder="e.g. KA 01 MJ 4521"
+              className={`w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl uppercase font-mono font-bold focus:outline-none ${
+                errors.registrationNumber ? 'border-rose-400 bg-rose-50/20' : ''
+              }`}
+            />
             {errors.registrationNumber && (
-              <p className="text-[11px] text-rose-500 mt-1">{errors.registrationNumber}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.registrationNumber}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
               Make & Model <span className="text-rose-500">*</span>
             </label>
             <input
@@ -200,21 +197,21 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
               name="makeModel"
               value={formData.makeModel}
               onChange={handleChange}
-              placeholder="e.g. Tata Nexon EV Max"
-              className={`w-full px-3.5 py-2 text-xs bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 ${
-                errors.makeModel ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+              placeholder="e.g. Tata Nexon EV"
+              className={`w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                errors.makeModel ? 'border-rose-400 bg-rose-50/20' : ''
               }`}
             />
             {errors.makeModel && (
-              <p className="text-[11px] text-rose-500 mt-1">{errors.makeModel}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.makeModel}</p>
             )}
           </div>
         </div>
 
         {/* Color & Owner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
               Vehicle Color <span className="text-rose-500">*</span>
             </label>
             <input
@@ -222,55 +219,61 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
               name="color"
               value={formData.color}
               onChange={handleChange}
-              placeholder="e.g. Intense Teal / Pearl White"
-              className={`w-full px-3.5 py-2 text-xs bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 ${
-                errors.color ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
+              placeholder="e.g. Pearl White"
+              className={`w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                errors.color ? 'border-rose-400 bg-rose-50/20' : ''
               }`}
             />
-            {errors.color && <p className="text-[11px] text-rose-500 mt-1">{errors.color}</p>}
+            {errors.color && (
+              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.color}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-navy-900 mb-1.5">
+            <label className="block text-xs font-bold text-blue-950 mb-1.5">
               Household Owner <span className="text-rose-500">*</span>
             </label>
             <select
               name="ownerId"
               value={formData.ownerId}
               onChange={handleChange}
-              className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-bee-500"
+              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
             >
               {members.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.name} ({m.relationship})
+                  {m.name} ({m.role === 'HEAD' ? 'Head' : m.relationship})
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Parking slot */}
+        {/* Parking Slot Selection */}
         <div>
-          <label className="block text-xs font-bold text-navy-900 mb-1.5">
-            Assigned Parking Slot
+          <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            Assigned Parking Slot <span className="text-rose-500">*</span>
           </label>
-          <input
-            type="text"
+          <select
             name="parkingSlot"
             value={formData.parkingSlot}
             onChange={handleChange}
-            placeholder="e.g. B2-P45 or B2-P46 (EV)"
-            className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
-          />
+            className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
+          >
+            {household?.parkingSlots?.map((slot) => (
+              <option key={slot} value={slot}>
+                {slot} (Flat 1204 Reserved)
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting}>
+        {/* Footer buttons */}
+        <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-3 border-t border-blue-100">
+          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button variant="gold" size="md" type="submit" loading={submitting}>
-            {isEditing ? 'Save Changes' : 'Register Vehicle'}
+          <Button variant="primary" size="md" type="submit" loading={submitting} className="w-full sm:w-auto">
+            {isEditing ? 'Save Vehicle' : 'Register Vehicle'}
           </Button>
         </div>
       </form>

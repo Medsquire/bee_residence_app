@@ -7,64 +7,90 @@ export default function MobileNav({ onOpenMenu }) {
   const { pendingVisitorsCount, activeServicesCount } = useHousehold();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 shadow-lg">
+    <nav className="lg:hidden fixed bottom-3 left-3 right-3 z-40 glass-dock rounded-2xl px-1.5 py-1.5 shadow-glass-lg border border-white/95">
       <div className="flex items-center justify-around">
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            `flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-semibold transition-colors ${
-              isActive ? 'text-bee-600 font-bold' : 'text-slate-500 hover:text-navy-900'
+            `flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl text-[11px] font-bold transition-all duration-200 ${
+              isActive
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.03]'
+                : 'text-slate-600 hover:text-blue-600'
             }`
           }
         >
-          <LayoutDashboard className="w-5 h-5" />
-          <span>Home</span>
+          {({ isActive }) => (
+            <>
+              <LayoutDashboard className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+              <span>Home</span>
+            </>
+          )}
         </NavLink>
 
         <NavLink
           to="/visitors"
           className={({ isActive }) =>
-            `relative flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-semibold transition-colors ${
-              isActive ? 'text-bee-600 font-bold' : 'text-slate-500 hover:text-navy-900'
+            `relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl text-[11px] font-bold transition-all duration-200 ${
+              isActive
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.03]'
+                : 'text-slate-600 hover:text-blue-600'
             }`
           }
         >
-          <div className="relative">
-            <UserCheck className="w-5 h-5" />
-            {pendingVisitorsCount > 0 && (
-              <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
-                {pendingVisitorsCount}
-              </span>
-            )}
-          </div>
-          <span>Visitors</span>
+          {({ isActive }) => (
+            <>
+              <div className="relative">
+                <UserCheck className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                {pendingVisitorsCount > 0 && (
+                  <span
+                    className={`absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-black ${
+                      isActive ? 'bg-white text-blue-700' : 'bg-blue-600 text-white shadow-xs'
+                    }`}
+                  >
+                    {pendingVisitorsCount}
+                  </span>
+                )}
+              </div>
+              <span>Visitors</span>
+            </>
+          )}
         </NavLink>
 
         <NavLink
           to="/services"
           className={({ isActive }) =>
-            `relative flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-semibold transition-colors ${
-              isActive ? 'text-bee-600 font-bold' : 'text-slate-500 hover:text-navy-900'
+            `relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl text-[11px] font-bold transition-all duration-200 ${
+              isActive
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.03]'
+                : 'text-slate-600 hover:text-blue-600'
             }`
           }
         >
-          <div className="relative">
-            <Wrench className="w-5 h-5" />
-            {activeServicesCount > 0 && (
-              <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white">
-                {activeServicesCount}
-              </span>
-            )}
-          </div>
-          <span>Services</span>
+          {({ isActive }) => (
+            <>
+              <div className="relative">
+                <Wrench className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                {activeServicesCount > 0 && (
+                  <span
+                    className={`absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-black ${
+                      isActive ? 'bg-white text-blue-700' : 'bg-blue-600 text-white shadow-xs'
+                    }`}
+                  >
+                    {activeServicesCount}
+                  </span>
+                )}
+              </div>
+              <span>Services</span>
+            </>
+          )}
         </NavLink>
 
         <button
           type="button"
           onClick={onOpenMenu}
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-semibold text-slate-500 hover:text-navy-900"
+          className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 rounded-xl text-[11px] font-bold text-slate-600 hover:text-blue-600 hover:bg-blue-50/50 transition-all"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4 text-slate-500" />
           <span>More</span>
         </button>
       </div>

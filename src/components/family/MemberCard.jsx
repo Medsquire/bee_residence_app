@@ -55,10 +55,10 @@ export default function MemberCard({ member, onEdit }) {
   return (
     <>
       <div
-        className={`bg-white rounded-2xl border transition-all duration-200 p-5 flex flex-col justify-between ${
+        className={`glass-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-all ${
           isCurrentActive
-            ? 'border-bee-400 ring-2 ring-bee-100 shadow-md'
-            : 'border-slate-200/90 hover:border-slate-300 shadow-xs'
+            ? 'border-blue-500 ring-2 ring-blue-100 shadow-md'
+            : 'hover:border-blue-200'
         }`}
       >
         <div>
@@ -68,10 +68,10 @@ export default function MemberCard({ member, onEdit }) {
               <img
                 src={member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(member.name)}`}
                 alt={member.name}
-                className="w-12 h-12 rounded-full object-cover ring-2 ring-slate-100 shrink-0"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-blue-100 shrink-0"
               />
               <div className="min-w-0">
-                <h4 className="font-bold text-navy-900 text-sm sm:text-base truncate">
+                <h4 className="font-bold text-blue-950 text-sm sm:text-base truncate">
                   {member.name}
                 </h4>
                 <p className="text-xs text-slate-500 font-medium">
@@ -80,9 +80,9 @@ export default function MemberCard({ member, onEdit }) {
               </div>
             </div>
 
-            <Badge variant={member.isHead ? 'gold' : 'neutral'} size="sm">
+            <Badge variant={member.isHead ? 'primary' : 'neutral'} size="sm">
               {member.isHead ? (
-                <ShieldCheck className="w-3.5 h-3.5 text-bee-600" />
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
               ) : (
                 <User className="w-3.5 h-3.5 text-slate-500" />
               )}
@@ -91,14 +91,14 @@ export default function MemberCard({ member, onEdit }) {
           </div>
 
           {/* Contact Details */}
-          <div className="mt-4 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-600">
+          <div className="mt-4 pt-3 border-t border-blue-100/70 space-y-1.5 text-xs text-slate-600">
             <div className="flex items-center gap-2">
-              <Phone className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-semibold text-slate-800">{formatPhone(member.phone)}</span>
+              <Phone className="w-3.5 h-3.5 text-blue-500" />
+              <span className="font-semibold text-blue-950">{formatPhone(member.phone)}</span>
             </div>
             {member.email && (
               <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-slate-400" />
+                <Mail className="w-3.5 h-3.5 text-blue-500" />
                 <span className="text-slate-600 truncate">{member.email}</span>
               </div>
             )}
@@ -106,22 +106,22 @@ export default function MemberCard({ member, onEdit }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+        <div className="mt-4 pt-3 border-t border-blue-100/70 flex items-center justify-between">
           {/* Persona quick switch */}
           {isCurrentActive ? (
-            <span className="text-[11px] font-bold text-bee-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
-              <Check className="w-3 h-3 text-bee-600" />
+            <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 flex items-center gap-1">
+              <Check className="w-3 h-3 text-blue-600" />
               Active User
             </span>
           ) : (
             <button
               type="button"
               onClick={handleSwitchToThisMember}
-              className="text-[11px] font-bold text-navy-800 hover:text-bee-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
+              className="text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-white/80 border border-blue-200 hover:bg-blue-50 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
               title="Test application as this family member"
             >
-              <Sparkles className="w-3 h-3 text-bee-500" />
-              <span>Switch to this user</span>
+              <Sparkles className="w-3 h-3 text-blue-500" />
+              <span>Switch User</span>
             </button>
           )}
 
@@ -131,7 +131,7 @@ export default function MemberCard({ member, onEdit }) {
               <button
                 type="button"
                 onClick={() => onEdit(member)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-navy-900 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                 title="Edit Member"
               >
                 <Edit2 className="w-3.5 h-3.5" />

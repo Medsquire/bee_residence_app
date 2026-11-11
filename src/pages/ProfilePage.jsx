@@ -98,101 +98,101 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="space-y-5 max-w-5xl">
+    <div className="space-y-4 sm:space-y-5 max-w-5xl">
       <PageHeader
         title="Profile & Apartment Settings"
       />
 
       {/* Top Profile Summary Card */}
-      <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
+      <div className="p-4 sm:p-6 rounded-3xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 shadow-glass">
+        <div className="flex items-center gap-3.5 sm:gap-4">
           <img
             src={currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}
             alt={currentUser?.name}
-            className="w-20 h-20 rounded-2xl object-cover ring-4 ring-bee-400/40 shadow-sm"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-4 ring-blue-100 shadow-xs shrink-0"
           />
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-navy-900">{currentUser?.name}</h2>
-              <Badge variant={isHead ? 'gold' : 'neutral'} size="sm">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg sm:text-xl font-black text-blue-950">{currentUser?.name}</h2>
+              <Badge variant={isHead ? 'primary' : 'neutral'} size="sm">
                 {isHead ? 'Household Head' : 'Household Member'}
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               {household.tower} • Flat {household.flatNumber} • {household.apartmentName}
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">
               Move-in Date: {currentUser?.moveInDate || '15 Apr 2023'}
             </p>
           </div>
         </div>
 
-        <Button variant="danger" size="md" icon={LogOut} onClick={logout}>
+        <Button variant="danger" size="md" icon={LogOut} onClick={logout} className="w-full sm:w-auto">
           Sign Out
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Personal Details Form */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs">
-          <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <User className="w-4 h-4 text-bee-600" />
+        <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
+          <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <User className="w-4 h-4 text-blue-600" />
             <span>Personal Information</span>
           </h3>
 
-          <form onSubmit={handleProfileSubmit} className="space-y-4">
+          <form onSubmit={handleProfileSubmit} className="space-y-3.5 sm:space-y-4">
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 Full Name
               </label>
               <input
                 type="text"
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 Mobile Number
               </label>
               <input
                 type="tel"
                 value={profileForm.phone}
                 onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500 font-mono"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 Email Address
               </label>
               <input
                 type="email"
                 value={profileForm.email}
                 onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
               />
             </div>
 
-            <Button variant="primary" size="md" type="submit">
+            <Button variant="primary" size="md" type="submit" className="w-full sm:w-auto">
               Save Profile Changes
             </Button>
           </form>
         </div>
 
         {/* Change Password Form */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs">
-          <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-bee-600" />
+        <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
+          <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Lock className="w-4 h-4 text-blue-600" />
             <span>Change Password</span>
           </h3>
 
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+          <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4">
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 Current Password
               </label>
               <input
@@ -200,12 +200,12 @@ export default function ProfilePage() {
                 value={passwordForm.currentPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 New Password
               </label>
               <input
@@ -213,12 +213,12 @@ export default function ProfilePage() {
                 value={passwordForm.newPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                 placeholder="At least 6 characters"
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1">
+              <label className="block text-xs font-bold text-blue-950 mb-1">
                 Confirm New Password
               </label>
               <input
@@ -226,11 +226,11 @@ export default function ProfilePage() {
                 value={passwordForm.confirmPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                 placeholder="Confirm password"
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
               />
             </div>
 
-            <Button variant="secondary" size="md" type="submit">
+            <Button variant="secondary" size="md" type="submit" className="w-full sm:w-auto">
               Update Password
             </Button>
           </form>
@@ -238,71 +238,71 @@ export default function ProfilePage() {
       </div>
 
       {/* Notification Preferences */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs">
-        <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <Bell className="w-4 h-4 text-bee-600" />
+      <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
+        <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <Bell className="w-4 h-4 text-blue-600" />
           <span>Resident Notification Preferences</span>
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/80 border border-blue-100 shadow-xs">
             <div>
-              <p className="font-bold text-navy-900">Visitor Arrival Notifications</p>
+              <p className="font-bold text-blue-950">Visitor Arrival Notifications</p>
               <p className="text-[11px] text-slate-500">Alerts when guests/couriers reach gate</p>
             </div>
             <input
               type="checkbox"
               checked={notificationsPrefs.visitorArrivals}
               onChange={() => handleTogglePref('visitorArrivals')}
-              className="w-4 h-4 text-bee-600 rounded cursor-pointer"
+              className="w-4 h-4 text-blue-600 rounded cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/80 border border-blue-100 shadow-xs">
             <div>
-              <p className="font-bold text-navy-900">Service Request Updates</p>
+              <p className="font-bold text-blue-950">Service Request Updates</p>
               <p className="text-[11px] text-slate-500">Technician schedule & completion alerts</p>
             </div>
             <input
               type="checkbox"
               checked={notificationsPrefs.serviceStatus}
               onChange={() => handleTogglePref('serviceStatus')}
-              className="w-4 h-4 text-bee-600 rounded cursor-pointer"
+              className="w-4 h-4 text-blue-600 rounded cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/80 border border-blue-100 shadow-xs">
             <div>
-              <p className="font-bold text-navy-900">Community & Maintenance Notices</p>
+              <p className="font-bold text-blue-950">Community & Maintenance Notices</p>
               <p className="text-[11px] text-slate-500">Water cutoff, power, and AGM announcements</p>
             </div>
             <input
               type="checkbox"
               checked={notificationsPrefs.communityBroadcasts}
               onChange={() => handleTogglePref('communityBroadcasts')}
-              className="w-4 h-4 text-bee-600 rounded cursor-pointer"
+              className="w-4 h-4 text-blue-600 rounded cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/80 border border-blue-100 shadow-xs">
             <div>
-              <p className="font-bold text-navy-900">WhatsApp Instant Alerts</p>
+              <p className="font-bold text-blue-950">WhatsApp Instant Alerts</p>
               <p className="text-[11px] text-slate-500">Receive entry OTPs & passes via WhatsApp</p>
             </div>
             <input
               type="checkbox"
               checked={notificationsPrefs.whatsappAlerts}
               onChange={() => handleTogglePref('whatsappAlerts')}
-              className="w-4 h-4 text-bee-600 rounded cursor-pointer"
+              className="w-4 h-4 text-blue-600 rounded cursor-pointer"
             />
           </div>
         </div>
       </div>
 
       {/* Emergency Directory Contacts */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs">
-        <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-rose-600" />
+      <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
+        <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 text-blue-600" />
           <span>Society Emergency & Helpdesk Directory</span>
         </h3>
 
@@ -310,15 +310,15 @@ export default function ProfilePage() {
           {EMERGENCY_CONTACTS.map((contact, i) => (
             <div
               key={i}
-              className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between"
+              className="p-3.5 rounded-2xl bg-white/80 border border-blue-100 shadow-xs flex flex-col justify-between"
             >
               <div>
-                <p className="font-bold text-navy-900">{contact.title}</p>
+                <p className="font-bold text-blue-950">{contact.title}</p>
                 <p className="text-[11px] text-slate-500 mt-0.5">{contact.role}</p>
               </div>
               <a
                 href={`tel:${contact.phone}`}
-                className="mt-3 inline-flex items-center gap-1.5 font-bold text-bee-700 hover:text-bee-800"
+                className="mt-3 inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-800"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
                 <span>{contact.phone}</span>
@@ -329,15 +329,15 @@ export default function ProfilePage() {
       </div>
 
       {/* Demo Data Management */}
-      <div className="p-5 rounded-3xl bg-slate-100 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl glass-card border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div>
-          <h4 className="font-bold text-navy-900 text-sm">Demo Data Management</h4>
+          <h4 className="font-bold text-blue-950 text-sm">Demo Data Management</h4>
           <p className="text-xs text-slate-500 mt-0.5">
-            Reset all visitors, service requests, passes, and vehicles back to the initial PRD demo scenario.
+            Reset all visitors, service requests, passes, and vehicles back to the initial demo scenario.
           </p>
         </div>
-        <Button variant="secondary" size="md" icon={RefreshCw} onClick={handleResetData}>
-          Reset Factory Demo Data
+        <Button variant="secondary" size="md" icon={RefreshCw} onClick={handleResetData} className="w-full sm:w-auto">
+          Reset Demo Data
         </Button>
       </div>
     </div>

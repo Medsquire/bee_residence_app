@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   Sparkles,
   HelpCircle,
-  ArrowRight
+  ArrowRight,
+  Shield
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -77,33 +78,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-      {/* Decorative ambient glowing circles */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-bee-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50/50 to-indigo-50/40 flex items-center justify-center p-3.5 sm:p-6 relative overflow-hidden">
+      {/* Decorative ambient glassmorphism blurred light orbs */}
+      <div className="fixed top-12 left-10 w-80 sm:w-96 h-80 sm:h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="fixed bottom-12 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-sky-300/30 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-indigo-200/20 rounded-full blur-2xl pointer-events-none -z-10" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-bee-400 to-bee-600 shadow-glow mb-4 text-navy-950 font-black text-2xl tracking-tighter ring-4 ring-bee-400/20">
-            BEE
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-sky-400 shadow-glow mb-4 text-white font-black text-2xl tracking-tighter ring-4 ring-white/60 border border-white/60">
+            B
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight">
             BEE Residence
           </h1>
-          <p className="text-sm font-medium text-bee-400/90 mt-1">
+          <p className="text-xs sm:text-sm font-semibold text-blue-600 mt-1">
             Smart Living, Simplified.
           </p>
-          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-navy-800/80 border border-navy-700 text-slate-300 text-xs">
-            <Building2 className="w-3.5 h-3.5 text-bee-400" />
+          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-card border border-blue-200/80 text-blue-950 text-xs font-semibold">
+            <Building2 className="w-3.5 h-3.5 text-blue-600" />
             <span>Bee Hive Residency • Flat A-1204</span>
           </div>
         </div>
 
-        {/* Login Card */}
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-navy-900">Resident Login</h2>
+        {/* Glassmorphic Login Card */}
+        <div className="glass-modal rounded-3xl p-5 sm:p-8 shadow-glass-lg border border-white/95">
+          <div className="mb-5 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-black text-blue-950">Resident Login</h2>
             <p className="text-xs text-slate-500 mt-1">
               Enter your registered mobile number and password to access your apartment.
             </p>
@@ -119,12 +121,12 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Phone input with +91 country prefix */}
             <div>
-              <label className="block text-xs font-bold text-navy-900 mb-1.5">
+              <label className="block text-xs font-bold text-blue-950 mb-1.5">
                 Mobile Number
               </label>
               <div className="relative flex items-center">
-                <div className="absolute left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-xs border-r pr-2 border-slate-200">
-                  <span className="text-slate-400 mr-1.5">🇮🇳</span>
+                <div className="absolute left-0 pl-3.5 flex items-center pointer-events-none text-blue-700 font-bold text-xs border-r pr-2 border-blue-200">
+                  <span className="mr-1.5">🇮🇳</span>
                   <span>+91</span>
                 </div>
                 <input
@@ -132,7 +134,7 @@ export default function LoginPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="98765 43210"
-                  className="w-full pl-20 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-navy-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-bee-500 focus:border-bee-500 transition-all"
+                  className="w-full pl-20 pr-4 py-2.5 sm:py-3 glass-input rounded-xl text-sm font-bold text-blue-950 focus:outline-none transition-all"
                 />
               </div>
             </div>
@@ -140,30 +142,30 @@ export default function LoginPage() {
             {/* Password input with show/hide toggle */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-navy-900">
+                <label className="block text-xs font-bold text-blue-950">
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowForgotModal(true)}
-                  className="text-xs font-semibold text-bee-700 hover:text-bee-800 transition-colors"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   Forgot password?
                 </button>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-blue-500 absolute left-3.5 top-3.5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-navy-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-bee-500 focus:border-bee-500 transition-all"
+                  className="w-full pl-10 pr-10 py-2.5 sm:py-3 glass-input rounded-xl text-sm font-semibold text-blue-950 focus:outline-none transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-blue-600"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -178,10 +180,10 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-bee-600 border-slate-300 rounded focus:ring-bee-500 cursor-pointer"
+                className="w-4 h-4 text-blue-600 border-blue-200 rounded focus:ring-blue-500 cursor-pointer"
               />
-              <label htmlFor="rememberMe" className="ml-2 text-xs font-medium text-slate-600 cursor-pointer">
-                Remember me on this browser
+              <label htmlFor="rememberMe" className="ml-2 text-xs font-semibold text-slate-600 cursor-pointer">
+                Remember me on this device
               </label>
             </div>
 
@@ -189,7 +191,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               variant="primary"
-              className="w-full py-3 text-sm font-bold shadow-md hover:shadow-lg"
+              className="w-full py-3 text-sm font-bold shadow-lg shadow-blue-500/25"
               loading={loading}
             >
               Sign In to BEE Residence
@@ -197,9 +199,9 @@ export default function LoginPage() {
           </form>
 
           {/* Quick Demo Credentials Selector */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          <div className="mt-6 pt-5 border-t border-blue-100/80">
             <div className="flex items-center gap-1.5 mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-bee-600" />
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <p className="text-xs font-bold text-slate-700">
                 1-Click Demo Login Personas:
               </p>
@@ -209,12 +211,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleQuickLogin(availableUsers[0])}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-bee-50 border border-slate-200 hover:border-bee-300 text-left transition-all group"
+                className="p-2.5 rounded-xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200/90 text-left transition-all group shadow-xs active:scale-95"
               >
-                <p className="text-xs font-bold text-navy-900 group-hover:text-bee-900 truncate">
+                <p className="text-xs font-black text-blue-950 group-hover:text-blue-700 truncate">
                   Rajesh Kumar
                 </p>
-                <p className="text-[10px] font-semibold text-bee-600 uppercase">
+                <p className="text-[10px] font-bold text-blue-600 uppercase">
                   Household Head
                 </p>
               </button>
@@ -222,25 +224,25 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleQuickLogin(availableUsers[1])}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-bee-50 border border-slate-200 hover:border-bee-300 text-left transition-all group"
+                className="p-2.5 rounded-xl bg-white/80 hover:bg-blue-50 border border-blue-200/90 text-left transition-all group shadow-xs active:scale-95"
               >
-                <p className="text-xs font-bold text-navy-900 group-hover:text-bee-900 truncate">
+                <p className="text-xs font-black text-blue-950 group-hover:text-blue-700 truncate">
                   Priya Kumar
                 </p>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase">
-                  Household Member
+                <p className="text-[10px] font-bold text-slate-500 uppercase">
+                  Family Member
                 </p>
               </button>
             </div>
 
-            <p className="text-[11px] text-center text-slate-400 mt-3">
-              Default password: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-navy-900 font-mono">bee123</code>
+            <p className="text-[11px] text-center text-slate-400 mt-3 font-medium">
+              Default password: <code className="bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded text-blue-900 font-mono font-bold">bee123</code>
             </p>
           </div>
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-slate-400 mt-6 font-medium">
           © 2026 BEE Residence. Smart Living, Simplified. Demonstration build.
         </p>
       </div>
@@ -260,7 +262,7 @@ export default function LoginPage() {
           {!otpSent ? (
             <>
               <div>
-                <label className="block text-xs font-bold text-navy-900 mb-1.5">
+                <label className="block text-xs font-bold text-blue-950 mb-1.5">
                   Registered Mobile Number
                 </label>
                 <input
@@ -268,7 +270,7 @@ export default function LoginPage() {
                   value={forgotPhone}
                   onChange={(e) => setForgotPhone(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bee-500"
+                  className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl focus:outline-none"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
@@ -280,7 +282,7 @@ export default function LoginPage() {
                   Cancel
                 </Button>
                 <Button
-                  variant="gold"
+                  variant="primary"
                   size="md"
                   onClick={() => {
                     if (forgotPhone.length >= 10) {
@@ -299,12 +301,12 @@ export default function LoginPage() {
             </>
           ) : (
             <div className="text-center py-4 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 shadow-xs">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-navy-900 text-sm">Demo Reset Dispatched</h4>
+              <h4 className="font-bold text-blue-950 text-sm">Demo Reset Dispatched</h4>
               <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                In production, an SMS OTP is verified with the society database. For this demo, please use password <code className="font-bold text-navy-900">bee123</code>.
+                In production, an SMS OTP is verified with the society database. For this demo, please use password <code className="font-bold text-blue-700">bee123</code>.
               </p>
               <Button
                 variant="primary"
