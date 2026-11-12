@@ -67,6 +67,13 @@ export function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+export function getTimeGreeting(date = new Date()) {
+  const hour = date.getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export function getTimeAgo(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);

@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
-import Badge from '../common/Badge';
 import { QRCodeSVG } from 'qrcode.react';
 import { useHousehold } from '../../context/HouseholdContext';
 import { useToast } from '../../context/ToastContext';
+import beeLogo from '../../assets/bee-property-logo.jpg';
 import {
   Copy,
   Check,
   Printer,
   Share2,
-  Calendar,
-  Clock,
-  Car,
-  ShieldCheck,
   CheckCircle2,
-  XCircle,
-  Building2
+  X
 } from 'lucide-react';
 
 export default function PassTicketModal({ pass, isOpen, onClose }) {
@@ -44,7 +38,7 @@ export default function PassTicketModal({ pass, isOpen, onClose }) {
   };
 
   const handleShare = () => {
-    const text = `BEE Residence Gate Pass for ${pass.guestName}!\nPass ID: ${pass.id}\nGate Entry OTP: ${pass.otp}\nLocation: Bee Hive Residency, Tower A, Flat 1204\nValid on: ${pass.expectedDate} at ${pass.expectedTime}`;
+    const text = `BEE Residence Gate Pass for ${pass.guestName}!\nPass ID: ${pass.id}\nGate Entry OTP: ${pass.otp}\nLocation: Bee Hive Residency, Tower A, Flat 1204\nValid on: ${pass.expectedDate}${pass.expectedTime ? ` at ${pass.expectedTime}` : ''}`;
     if (navigator.share) {
       navigator.share({
         title: 'BEE Residence Guest Pass',
@@ -70,45 +64,43 @@ export default function PassTicketModal({ pass, isOpen, onClose }) {
   };
 
   const handleCancelPass = () => {
-    if (window.confirm('Cancel this digital visitor pass?')) {
-      cancelPass(pass.id);
-      addToast({
-        title: 'Pass Cancelled',
-        message: `Pass ${pass.id} has been deactivated.`,
-        type: 'info'
-      });
-      onClose();
-    }
+    cancelPass(pass.id);
+    addToast({
+      title: 'Pass Cancelled',
+      message: `Pass ${pass.id} has been deactivated.`,
+      type: 'info'
+    });
+    onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
-      <div className="space-y-4 print-pass-area">
-        {/* Pass Digital Ticket Container */}
-        <div className="rounded-3xl bg-gradient-to-br from-blue-700 via-blue-600 to-sky-600 text-white p-5 sm:p-6 shadow-glass-lg border border-white/40 relative overflow-hidden">
-          {/* Subtle decorative glow */}
-          <div className="absolute -top-12 -right-12 w-44 h-44 bg-sky-300/30 rounded-full blur-2xl pointer-events-none" />
+    <Modal isOpen={isOpen} onClose={onClose} title="Visitor Gate Pass" maxWidth="max-w-md">
+      <div className="space-y-3 print-pass-area">
+        {/* Frosted Glass Digital Pass Card */}
+        <div className="rounded-3xl bg-gradient-to-br from-white/75 via-sky-50/60 to-blue-100/65 dark:from-slate-900/70 dark:via-slate-800/60 dark:to-blue-950/65 backdrop-blur-xl p-4 sm:p-5 border border-white/85 dark:border-slate-700/80 shadow-[0_14px_32px_-8px_rgba(37,99,235,0.18),inset_0_1px_0_rgba(255,255,255,0.95)] relative overflow-hidden">
+          {/* Ambient glass highlight */}
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-sky-400/20 dark:bg-sky-500/15 rounded-full blur-2xl pointer-events-none" />
 
-          {/* Ticket Header */}
-          <div className="flex items-center justify-between pb-3.5 border-b border-white/20">
+          {/* Ticket Brand & Status */}
+          <div className="flex items-center justify-between pb-3 border-b border-blue-200/60 dark:border-slate-700/70 relative">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white text-blue-700 font-black flex items-center justify-center text-sm shadow-xs">
-                B
+              <div className="w-8 h-8 rounded-xl bg-white shadow-xs border border-blue-100/80 flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                <img src={beeLogo} alt="Bee Property" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <h4 className="font-extrabold text-sm text-white tracking-wide">BEE Residence</h4>
-                <p className="text-[10px] text-blue-100 font-bold tracking-wider uppercase">
-                  Digital Visitor Pass
+              <div className="leading-tight">
+                <h4 className="font-medium text-sm text-black dark:text-white tracking-tight">Bee Property</h4>
+                <p className="text-[10px] text-blue-600 dark:text-sky-400 font-medium tracking-[0.12em] uppercase">
+                  Digital Pass
                 </p>
               </div>
             </div>
             <span
-              className={`text-xs px-2.5 py-0.5 rounded-full font-bold border backdrop-blur-xs ${
+              className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border backdrop-blur-sm ${
                 pass.status === 'Active'
-                  ? 'bg-white/20 text-white border-white/40'
+                  ? 'bg-blue-600/10 dark:bg-sky-400/15 text-blue-700 dark:text-sky-300 border-blue-300/60 dark:border-sky-400/30'
                   : pass.status === 'Used'
-                  ? 'bg-blue-900/40 text-blue-100 border-white/20'
-                  : 'bg-rose-500/30 text-rose-100 border-rose-300/40'
+                  ? 'bg-slate-500/10 text-black/75 dark:text-slate-300 border-slate-300/60 dark:border-slate-600'
+                  : 'bg-rose-500/10 text-rose-600 dark:text-rose-300 border-rose-300/60 dark:border-rose-700/50'
               }`}
             >
               {pass.status}
@@ -116,120 +108,135 @@ export default function PassTicketModal({ pass, isOpen, onClose }) {
           </div>
 
           {/* Guest Info */}
-          <div className="mt-3.5">
-            <p className="text-[10px] uppercase font-bold text-blue-100 tracking-wider">
+          <div className="mt-3 relative">
+            <p className="text-[10px] uppercase font-medium text-blue-600 dark:text-sky-400 tracking-[0.12em]">
               Authorized Guest
             </p>
-            <h3 className="text-xl font-black text-white mt-0.5 tracking-tight">
+            <h3 className="text-lg sm:text-xl font-semibold text-black dark:text-white mt-0.5 tracking-tight">
               {pass.guestName}
             </h3>
-            <p className="text-xs text-blue-100 font-semibold">{pass.category} • {pass.purpose}</p>
+            <p className="text-xs font-normal text-black/75 dark:text-slate-300">
+              {pass.category}{pass.purpose ? ` • ${pass.purpose}` : ''}
+            </p>
           </div>
 
-          {/* QR Code & OTP Centerpiece */}
-          <div className="mt-4 p-4 rounded-2xl bg-white text-blue-950 flex flex-col items-center justify-center shadow-lg">
-            <div className="p-2 bg-white rounded-xl shadow-xs">
+          {/* QR Code & OTP Glass Pedestal */}
+          <div className="mt-3 p-3 rounded-2xl bg-white/75 dark:bg-slate-900/70 backdrop-blur-md border border-white/90 dark:border-slate-700/80 flex flex-col items-center justify-center shadow-xs relative">
+            <div className="p-2 bg-white rounded-xl border border-blue-100/70 shadow-xs">
               <QRCodeSVG
                 value={pass.qrPayload || pass.id}
-                size={140}
+                size={112}
                 level="M"
                 includeMargin={false}
               />
             </div>
 
             {/* OTP Banner */}
-            <div className="mt-3.5 w-full flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50 border border-blue-200">
+            <div className="mt-2.5 w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-blue-50/75 dark:bg-slate-800/85 border border-blue-100 dark:border-slate-700">
               <div>
-                <p className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
+                <p className="text-[10px] font-medium text-blue-700 dark:text-sky-400 uppercase tracking-wider">
                   Gate Entry OTP
                 </p>
-                <p className="font-mono text-xl font-black text-blue-950 tracking-widest">
+                <p className="font-mono text-lg sm:text-xl font-semibold text-black dark:text-white tracking-widest">
                   {pass.otp}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCopyOtp}
-                className="no-print p-2 rounded-xl bg-white border border-blue-200 text-slate-700 hover:text-blue-600 transition-colors shadow-xs"
+                className="no-print p-2 rounded-xl bg-white/90 dark:bg-slate-900 border border-blue-100 dark:border-slate-700 text-black dark:text-white hover:text-blue-600 dark:hover:text-sky-400 transition-colors shadow-xs"
                 title="Copy OTP"
+                aria-label="Copy OTP"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Pass Meta Grid */}
-          <div className="mt-4 pt-3 border-t border-white/20 grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <span className="text-[10px] text-blue-100 block font-semibold uppercase">Destination</span>
-              <span className="font-bold text-white">Tower A, Flat 1204</span>
+          {/* Slim Pass Meta Grid */}
+          <div className="mt-3 pt-2.5 border-t border-blue-200/55 dark:border-slate-700/70 grid grid-cols-2 gap-2 text-xs relative">
+            <div className="px-2.5 py-1.5 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-white/75 dark:border-slate-700/60">
+              <span className="text-[10px] text-black/60 dark:text-slate-400 block font-medium uppercase tracking-wide">
+                Destination
+              </span>
+              <span className="font-medium text-black dark:text-white">Tower A, Flat 1204</span>
             </div>
-            <div>
-              <span className="text-[10px] text-blue-100 block font-semibold uppercase">Pass Number</span>
-              <span className="font-mono font-bold text-white">{pass.id}</span>
+            <div className="px-2.5 py-1.5 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-white/75 dark:border-slate-700/60">
+              <span className="text-[10px] text-black/60 dark:text-slate-400 block font-medium uppercase tracking-wide">
+                Pass ID
+              </span>
+              <span className="font-mono font-medium text-black dark:text-white">{pass.id}</span>
             </div>
-            <div>
-              <span className="text-[10px] text-blue-100 block font-semibold uppercase">Expected Arrival</span>
-              <span className="font-medium text-blue-50">
-                {pass.expectedDate} • {pass.expectedTime}
+            <div className="px-2.5 py-1.5 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-white/75 dark:border-slate-700/60">
+              <span className="text-[10px] text-black/60 dark:text-slate-400 block font-medium uppercase tracking-wide">
+                Expected Arrival
+              </span>
+              <span className="font-medium text-black dark:text-white">
+                {pass.expectedDate}{pass.expectedTime ? ` • ${pass.expectedTime}` : ''}
               </span>
             </div>
-            <div>
-              <span className="text-[10px] text-blue-100 block font-semibold uppercase">Vehicle Plate</span>
-              <span className="font-mono font-medium text-blue-50">
-                {pass.vehicleNumber || 'Walk-in / Cab'}
+            <div className="px-2.5 py-1.5 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-white/75 dark:border-slate-700/60">
+              <span className="text-[10px] text-black/60 dark:text-slate-400 block font-medium uppercase tracking-wide">
+                Vehicle
+              </span>
+              <span className="font-mono font-medium text-black dark:text-white truncate block">
+                {pass.vehicleNumber && pass.vehicleNumber !== 'None (Cab/Walk-in)' ? pass.vehicleNumber : 'Walk-in / Cab'}
               </span>
             </div>
           </div>
-
-          {pass.instructions && (
-            <p className="mt-3 text-[11px] text-blue-100 italic bg-white/10 p-2 rounded-xl border border-white/20">
-              "{pass.instructions}"
-            </p>
-          )}
         </div>
 
-        {/* Action Buttons for User Interaction */}
-        <div className="no-print space-y-2 pt-1">
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1 text-xs sm:text-sm py-2"
-              icon={Share2}
+        {/* Frosted Glass Icon-Only Action Bar */}
+        <div className="no-print pt-1">
+          <div
+            className={`grid ${
+              isActive ? 'grid-cols-4' : 'grid-cols-2'
+            } gap-2 p-1.5 rounded-2xl bg-blue-50/45 dark:bg-slate-800/55 backdrop-blur-md border border-white/85 dark:border-slate-700/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]`}
+          >
+            <button
+              type="button"
               onClick={handleShare}
+              title="Share Pass"
+              aria-label="Share Pass"
+              className="h-10 rounded-xl bg-white/75 dark:bg-slate-900/60 backdrop-blur-md border border-blue-100/85 dark:border-slate-700 text-black dark:text-white hover:text-blue-600 dark:hover:text-sky-400 hover:bg-white shadow-[0_6px_14px_-4px_rgba(37,99,235,0.10),inset_0_1px_0_rgba(255,255,255,0.95)] inline-flex items-center justify-center active:scale-[0.97] transition-all"
             >
-              Share Pass
-            </Button>
-            <Button
-              variant="secondary"
-              className="flex-1 text-xs sm:text-sm py-2"
-              icon={Printer}
-              onClick={handlePrint}
-            >
-              Print Pass
-            </Button>
-          </div>
+              <Share2 className="w-4 h-4" strokeWidth={1.7} />
+            </button>
 
-          {isActive && (
-            <div className="flex flex-col sm:flex-row gap-2 pt-1">
-              <Button
-                variant="primary"
-                className="flex-1 text-xs sm:text-sm py-2"
-                icon={CheckCircle2}
-                onClick={handleSimulateGateEntry}
-              >
-                Simulate Gate Scan (Use)
-              </Button>
-              <Button
-                variant="danger"
-                size="md"
-                className="text-xs sm:text-sm py-2"
-                onClick={handleCancelPass}
-              >
-                Cancel Pass
-              </Button>
-            </div>
-          )}
+            <button
+              type="button"
+              onClick={handlePrint}
+              title="Print Pass"
+              aria-label="Print Pass"
+              className="h-10 rounded-xl bg-white/75 dark:bg-slate-900/60 backdrop-blur-md border border-blue-100/85 dark:border-slate-700 text-black dark:text-white hover:text-blue-600 dark:hover:text-sky-400 hover:bg-white shadow-[0_6px_14px_-4px_rgba(37,99,235,0.10),inset_0_1px_0_rgba(255,255,255,0.95)] inline-flex items-center justify-center active:scale-[0.97] transition-all"
+            >
+              <Printer className="w-4 h-4" strokeWidth={1.7} />
+            </button>
+
+            {isActive && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSimulateGateEntry}
+                  title="Simulate Gate Scan (Use)"
+                  aria-label="Simulate Gate Scan (Use)"
+                  className="h-10 rounded-xl bg-gradient-to-br from-blue-600/85 via-blue-500/80 to-sky-500/85 dark:from-blue-600/85 dark:to-sky-500/80 backdrop-blur-md border border-white/75 dark:border-sky-300/45 text-white shadow-[0_8px_18px_-4px_rgba(37,99,235,0.35),inset_0_1px_0_rgba(255,255,255,0.65)] hover:from-blue-600 hover:to-sky-500 inline-flex items-center justify-center active:scale-[0.97] transition-all"
+                >
+                  <CheckCircle2 className="w-4 h-4" strokeWidth={1.9} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCancelPass}
+                  title="Cancel Pass"
+                  aria-label="Cancel Pass"
+                  className="h-10 rounded-xl bg-white/65 dark:bg-slate-900/55 backdrop-blur-md border border-rose-200/80 dark:border-rose-700/60 text-rose-600 dark:text-rose-300 shadow-[0_6px_14px_-4px_rgba(244,63,94,0.16),inset_0_1px_0_rgba(255,255,255,0.95)] hover:bg-rose-50/90 dark:hover:bg-rose-950/60 hover:border-rose-300 inline-flex items-center justify-center active:scale-[0.97] transition-all"
+                >
+                  <X className="w-4 h-4" strokeWidth={1.9} />
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </Modal>

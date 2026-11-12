@@ -46,6 +46,17 @@ export default {
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
+      fontWeight: {
+        thin: '300',
+        extralight: '300',
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '500',
+        bold: '500',
+        extrabold: '500',
+        black: '500',
+      },
       boxShadow: {
         'soft': '0 4px 20px -2px rgba(37, 99, 235, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03)',
         'card': '0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.03)',

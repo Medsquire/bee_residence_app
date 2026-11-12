@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PageHeader from '../components/common/PageHeader';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
+import ImagePreviewModal from '../components/common/ImagePreviewModal';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useToast } from '../context/ToastContext';
@@ -15,7 +16,6 @@ import {
   Bell,
   PhoneCall,
   ShieldAlert,
-  RefreshCw,
   LogOut,
   Check,
   ShieldCheck
@@ -23,8 +23,13 @@ import {
 
 export default function ProfilePage() {
   const { currentUser, isHead, updateProfile, logout } = useAuth();
-  const { household, resetAllData } = useHousehold();
+  const { household } = useHousehold();
   const { addToast } = useToast();
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
+  const avatarUrl =
+    currentUser?.avatar ||
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250';
 
   const [profileForm, setProfileForm] = useState({
     name: currentUser?.name || '',
@@ -86,17 +91,6 @@ export default function ProfilePage() {
     });
   };
 
-  const handleResetData = () => {
-    if (window.confirm('Reset all demo data back to default factory state?')) {
-      resetAllData();
-      addToast({
-        title: 'Factory Data Restored',
-        message: 'Visitors, service requests, passes, and vehicles reset to clean state.',
-        type: 'info'
-      });
-    }
-  };
-
   return (
     <div className="space-y-4 sm:space-y-5 max-w-5xl">
       <PageHeader
@@ -106,11 +100,19 @@ export default function ProfilePage() {
       {/* Top Profile Summary Card */}
       <div className="p-4 sm:p-6 rounded-3xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 shadow-glass">
         <div className="flex items-center gap-3.5 sm:gap-4">
-          <img
-            src={currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250'}
-            alt={currentUser?.name}
-            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-4 ring-blue-100 shadow-xs shrink-0"
-          />
+          <button
+            type="button"
+            onClick={() => setIsImageOpen(true)}
+            title="View Full Photo"
+            aria-label={`View full photo of ${currentUser?.name || 'Resident'}`}
+            className="rounded-2xl overflow-hidden ring-4 ring-blue-100 shadow-xs shrink-0 cursor-zoom-in hover:opacity-90 active:scale-95 transition-all"
+          >
+            <img
+              src={avatarUrl}
+              alt={currentUser?.name}
+              className="w-16 h-16 sm:w-20 sm:h-20 object-cover block"
+            />
+          </button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-lg sm:text-xl font-black text-blue-950">{currentUser?.name}</h2>
@@ -328,18 +330,13 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Demo Data Management */}
-      <div className="p-4 sm:p-5 rounded-3xl glass-card border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-        <div>
-          <h4 className="font-bold text-blue-950 text-sm">Demo Data Management</h4>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Reset all visitors, service requests, passes, and vehicles back to the initial demo scenario.
-          </p>
-        </div>
-        <Button variant="secondary" size="md" icon={RefreshCw} onClick={handleResetData} className="w-full sm:w-auto">
-          Reset Demo Data
-        </Button>
-      </div>
+      <ImagePreviewModal
+        isOpen={isImageOpen}
+        onClose={() => setIsImageOpen(false)}
+        src={avatarUrl}
+        alt={currentUser?.name || 'Resident'}
+        subtitle={isHead ? 'Household Head' : 'Household Member'}
+      />
     </div>
   );
 }

@@ -38,14 +38,12 @@ export default function SimulationBar() {
   };
 
   const handleResetData = () => {
-    if (window.confirm('Reset all demo data back to factory defaults?')) {
-      resetAllData();
-      addToast({
-        title: 'Demo Data Restored',
-        message: 'All visitors, service tickets, and passes reset to default state.',
-        type: 'info'
-      });
-    }
+    resetAllData();
+    addToast({
+      title: 'Demo Data Restored',
+      message: 'All visitors, service tickets, and passes reset to default state.',
+      type: 'info'
+    });
   };
 
   return (

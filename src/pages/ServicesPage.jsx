@@ -1,23 +1,63 @@
 import React, { useState, useMemo } from 'react';
 import PageHeader from '../components/common/PageHeader';
+import AddIconButton from '../components/common/AddIconButton';
 import SearchInput from '../components/common/SearchInput';
 import Badge from '../components/common/Badge';
-import Button from '../components/common/Button';
 import EmptyState from '../components/common/EmptyState';
 import ServiceCard from '../components/services/ServiceCard';
 import ServiceRequestModal from '../components/services/ServiceRequestModal';
 import ServiceDetailsModal from '../components/services/ServiceDetailsModal';
 import { useHousehold } from '../context/HouseholdContext';
-import { Wrench, Plus, Filter, CheckCircle2, Clock, Calendar, Sparkles } from 'lucide-react';
+import {
+  LayoutGrid,
+  Wrench,
+  Plus,
+  Filter,
+  CheckCircle2,
+  Clock,
+  Calendar,
+  CheckCheck
+} from 'lucide-react';
 
-const STATUS_TABS = [
-  { id: 'all', label: 'All Requests' },
-  { id: 'Pending', label: 'Pending' },
-  { id: 'Approved', label: 'Approved' },
-  { id: 'Scheduled', label: 'Scheduled' },
-  { id: 'In Progress', label: 'In Progress' },
-  { id: 'Completed', label: 'Completed' },
-  { id: 'Cancelled', label: 'Cancelled' }
+const SUMMARY_CARDS = [
+  {
+    id: 'all',
+    label: 'Total Requests',
+    shortLabel: 'Total',
+    icon: LayoutGrid,
+    chipClass: 'bg-blue-500/12 dark:bg-sky-400/15 text-blue-600 dark:text-sky-400'
+  },
+  {
+    id: 'Pending',
+    label: 'Pending',
+    icon: Clock,
+    chipClass: 'bg-amber-500/12 dark:bg-amber-400/15 text-amber-600 dark:text-amber-400'
+  },
+  {
+    id: 'Approved',
+    label: 'Approved',
+    icon: CheckCircle2,
+    chipClass: 'bg-sky-500/12 dark:bg-sky-400/15 text-sky-600 dark:text-sky-400'
+  },
+  {
+    id: 'Scheduled',
+    label: 'Scheduled',
+    icon: Calendar,
+    chipClass: 'bg-indigo-500/12 dark:bg-indigo-400/15 text-indigo-600 dark:text-indigo-400'
+  },
+  {
+    id: 'In Progress',
+    label: 'In Progress',
+    shortLabel: 'Progress',
+    icon: Wrench,
+    chipClass: 'bg-blue-500/12 dark:bg-cyan-400/15 text-blue-700 dark:text-cyan-400'
+  },
+  {
+    id: 'Completed',
+    label: 'Completed',
+    icon: CheckCheck,
+    chipClass: 'bg-emerald-500/12 dark:bg-emerald-400/15 text-emerald-600 dark:text-emerald-400'
+  }
 ];
 
 const CATEGORIES = [
@@ -50,12 +90,14 @@ export default function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
-  // Summary counts
-  const pendingCount = serviceRequests.filter((s) => s.status === 'Pending').length;
-  const approvedCount = serviceRequests.filter((s) => s.status === 'Approved').length;
-  const scheduledCount = serviceRequests.filter((s) => s.status === 'Scheduled').length;
-  const inProgressCount = serviceRequests.filter((s) => s.status === 'In Progress').length;
-  const completedCount = serviceRequests.filter((s) => s.status === 'Completed').length;
+  // Summary counts in one pass
+  const statusCounts = useMemo(() => {
+    const counts = { all: serviceRequests.length };
+    for (const req of serviceRequests) {
+      counts[req.status] = (counts[req.status] || 0) + 1;
+    }
+    return counts;
+  }, [serviceRequests]);
 
   const filteredServices = useMemo(() => {
     return serviceRequests.filter((s) => {
@@ -97,92 +139,61 @@ export default function ServicesPage() {
             </Badge>
           ) : null
         }
-        action={
-          <Button
-            variant="primary"
-            size="md"
-            icon={Plus}
+        inlineAction={
+          <AddIconButton
             onClick={() => setIsFormOpen(true)}
-            className="w-full sm:w-auto text-xs sm:text-sm"
-          >
-            Add Service Request
-          </Button>
+            label="Add Service Request"
+          />
         }
       />
 
-      {/* Summary Cards Row - 3 cols on mobile, 6 on desktop */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
-        <div
-          onClick={() => setActiveTab('all')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'all'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Total</span>
-          <span className="text-lg sm:text-xl font-black">{serviceRequests.length}</span>
-        </div>
+      {/* Summary Cards Row - All 6 compact glass cards in one row */}
+      <div className="grid grid-cols-6 gap-1 sm:gap-2.5">
+        {SUMMARY_CARDS.map((card) => {
+          const Icon = card.icon;
+          const count = statusCounts[card.id] || 0;
+          const isActive = activeTab === card.id;
 
-        <div
-          onClick={() => setActiveTab('Pending')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'Pending'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Pending</span>
-          <span className="text-lg sm:text-xl font-black text-blue-600">{pendingCount}</span>
-        </div>
-
-        <div
-          onClick={() => setActiveTab('Approved')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'Approved'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Approved</span>
-          <span className="text-lg sm:text-xl font-black text-sky-600">{approvedCount}</span>
-        </div>
-
-        <div
-          onClick={() => setActiveTab('Scheduled')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'Scheduled'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Scheduled</span>
-          <span className="text-lg sm:text-xl font-black text-indigo-600">{scheduledCount}</span>
-        </div>
-
-        <div
-          onClick={() => setActiveTab('In Progress')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'In Progress'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">In Progress</span>
-          <span className="text-lg sm:text-xl font-black text-blue-700">{inProgressCount}</span>
-        </div>
-
-        <div
-          onClick={() => setActiveTab('Completed')}
-          className={`p-2.5 sm:p-3.5 rounded-2xl cursor-pointer transition-all shadow-xs ${
-            activeTab === 'Completed'
-              ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25'
-              : 'glass-card text-slate-700 hover:border-blue-200'
-          }`}
-        >
-          <span className="text-[10px] sm:text-[11px] font-semibold opacity-80 block truncate">Completed</span>
-          <span className="text-lg sm:text-xl font-black text-blue-800">{completedCount}</span>
-        </div>
+          return (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => setActiveTab(card.id)}
+              title={`${card.label}: ${count}`}
+              aria-label={`${card.label}: ${count}`}
+              aria-pressed={isActive}
+              className={`rounded-xl sm:rounded-2xl py-2 px-0.5 sm:py-2.5 sm:px-2 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer active:scale-95 ${
+                isActive
+                  ? 'bg-gradient-to-br from-blue-600/90 via-blue-500/85 to-sky-500/90 dark:from-blue-600/85 dark:to-sky-500/80 backdrop-blur-md border border-white/75 dark:border-sky-300/45 text-white shadow-[0_8px_18px_-4px_rgba(37,99,235,0.32),inset_0_1px_0_rgba(255,255,255,0.55)]'
+                  : 'glass-stat-white text-black dark:text-white hover:-translate-y-0.5'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                <span
+                  className={`w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg flex items-center justify-center transition-colors shrink-0 ${
+                    isActive
+                      ? 'bg-white/20 text-white border border-white/35'
+                      : card.chipClass
+                  }`}
+                >
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={1.6} />
+                </span>
+                <span className="text-xs sm:text-base font-medium leading-none tabular-nums">
+                  {count}
+                </span>
+              </div>
+              <span
+                className={`text-[8.5px] sm:text-[11px] font-normal leading-none tracking-tight whitespace-nowrap ${
+                  isActive
+                    ? 'text-white/90'
+                    : 'text-black/55 dark:text-slate-300/85'
+                }`}
+              >
+                {card.shortLabel || card.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Search & Filters */}
@@ -195,11 +206,11 @@ export default function ServicesPage() {
         />
 
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-blue-500 shrink-0" />
+          <Filter className="w-4 h-4 text-blue-500 dark:text-sky-400 shrink-0" />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
+            className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-medium text-black dark:text-white focus:outline-none"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>

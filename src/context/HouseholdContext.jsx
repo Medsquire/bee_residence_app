@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import {
   INITIAL_HOUSEHOLD,
   INITIAL_USERS,
@@ -9,7 +9,7 @@ import {
   INITIAL_NOTIFICATIONS,
   INITIAL_ANNOUNCEMENTS,
   INITIAL_ACTIVITY_LOGS
-} from '../data/initialData';
+} from '../data';
 import { loadFromStorage, saveToStorage } from '../utils/storage';
 import { generateTicketId, generateId, generateOtp } from '../utils/formatters';
 
@@ -35,8 +35,11 @@ export function HouseholdProvider({ children }) {
     };
   });
 
+  const dataRef = useRef(data);
+
   // Save to storage on update
   useEffect(() => {
+    dataRef.current = data;
     saveToStorage(STORAGE_KEY, data);
   }, [data]);
 
@@ -53,6 +56,7 @@ export function HouseholdProvider({ children }) {
       announcements: INITIAL_ANNOUNCEMENTS,
       activityLogs: INITIAL_ACTIVITY_LOGS
     };
+    dataRef.current = fresh;
     setData(fresh);
     saveToStorage(STORAGE_KEY, fresh);
   }, []);
@@ -91,77 +95,73 @@ export function HouseholdProvider({ children }) {
   // MODULE C: VISITORS & SINGLE-DECISION LOCK
   // -------------------------------------------------------------
   const decideVisitor = useCallback((visitorId, decision, note = '', user) => {
-    let result = { success: false, message: '' };
+    const prev = dataRef.current;
+    const visitor = prev.visitors.find((v) => v.id === visitorId);
+    if (!visitor) {
+      return { success: false, message: 'Visitor record not found.' };
+    }
 
-    setData((prev) => {
-      const visitor = prev.visitors.find((v) => v.id === visitorId);
-      if (!visitor) {
-        result = { success: false, message: 'Visitor record not found.' };
-        return prev;
-      }
-
-      // Check single decision lock rule (PRD Section 5 Module C)
-      if (visitor.status !== 'Pending') {
-        result = {
-          success: false,
-          alreadyDecided: true,
-          message: `This request was already ${visitor.status.toLowerCase()} by ${visitor.decisionBy || 'another member'} on ${new Date(visitor.decidedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`
-        };
-        return prev;
-      }
-
-      const now = new Date().toISOString();
-      const updatedVisitors = prev.visitors.map((v) => {
-        if (v.id === visitorId) {
-          return {
-            ...v,
-            status: decision, // 'Approved' | 'Rejected' | 'Leave at Gate'
-            decisionBy: user?.name || 'Household Resident',
-            decidedAt: now,
-            decisionNote: note || (decision === 'Leave at Gate' ? 'Instructed security to leave parcels at gate' : `Entry ${decision.toLowerCase()}`)
-          };
-        }
-        return v;
-      });
-
-      // Update related notification to read
-      const updatedNotifs = prev.notifications.map((n) => {
-        if (n.relatedType === 'visitor' && n.relatedId === visitorId) {
-          return { ...n, isRead: true };
-        }
-        return n;
-      });
-
-      // Activity log
-      const logText = decision === 'Leave at Gate'
-        ? `Instructed security: Leave parcels at gate for ${visitor.name}`
-        : `${decision} visitor entry for ${visitor.name}`;
-
-      const newLog = {
-        id: generateId('LOG'),
-        actorName: user?.name || 'Resident',
-        actorRole: user?.role || 'MEMBER',
-        action: logText,
-        timestamp: now,
-        icon: decision === 'Approved' ? 'user-check' : decision === 'Rejected' ? 'user-x' : 'package'
-      };
-
-      result = {
-        success: true,
-        message: decision === 'Leave at Gate'
-          ? `Security instructed to collect parcel at gate.`
-          : `Visitor entry ${decision.toLowerCase()} successfully.`
-      };
-
+    // Check single decision lock rule (PRD Section 5 Module C)
+    if (visitor.status !== 'Pending') {
       return {
-        ...prev,
-        visitors: updatedVisitors,
-        notifications: updatedNotifs,
-        activityLogs: [newLog, ...prev.activityLogs]
+        success: false,
+        alreadyDecided: true,
+        message: `This request was already ${visitor.status.toLowerCase()} by ${visitor.decisionBy || 'another member'} on ${new Date(visitor.decidedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`
       };
+    }
+
+    const now = new Date().toISOString();
+    const updatedVisitors = prev.visitors.map((v) => {
+      if (v.id === visitorId) {
+        return {
+          ...v,
+          status: decision, // 'Approved' | 'Rejected' | 'Leave at Gate'
+          decisionBy: user?.name || 'Household Resident',
+          decidedAt: now,
+          decisionNote: note || (decision === 'Leave at Gate' ? 'Instructed security to leave parcels at gate' : `Entry ${decision.toLowerCase()}`)
+        };
+      }
+      return v;
     });
 
-    return result;
+    // Update related notification to read
+    const updatedNotifs = prev.notifications.map((n) => {
+      if (n.relatedType === 'visitor' && n.relatedId === visitorId) {
+        return { ...n, isRead: true };
+      }
+      return n;
+    });
+
+    // Activity log
+    const logText = decision === 'Leave at Gate'
+      ? `Instructed security: Leave parcels at gate for ${visitor.name}`
+      : `${decision} visitor entry for ${visitor.name}`;
+
+    const newLog = {
+      id: generateId('LOG'),
+      actorName: user?.name || 'Resident',
+      actorRole: user?.role || 'MEMBER',
+      action: logText,
+      timestamp: now,
+      icon: decision === 'Approved' ? 'user-check' : decision === 'Rejected' ? 'user-x' : 'package'
+    };
+
+    const nextState = {
+      ...prev,
+      visitors: updatedVisitors,
+      notifications: updatedNotifs,
+      activityLogs: [newLog, ...prev.activityLogs]
+    };
+
+    dataRef.current = nextState;
+    setData(nextState);
+
+    return {
+      success: true,
+      message: decision === 'Leave at Gate'
+        ? `Security instructed to collect parcel at gate.`
+        : `Visitor entry ${decision.toLowerCase()} successfully.`
+    };
   }, []);
 
   // Simulate new incoming visitor at gate
@@ -432,7 +432,7 @@ export function HouseholdProvider({ children }) {
       vehicleNumber: passData.vehicleNumber || 'None (Cab/Walk-in)',
       otp,
       qrPayload: `${passId}|FLAT1204|${otp}|${passData.guestName.toUpperCase().replace(/\s+/g, '_')}`,
-      instructions: passData.instructions || 'Gate entry with OTP or QR scan.',
+      instructions: passData.instructions || '',
       status: 'Active',
       createdBy: user?.name || 'Resident',
       createdAt: now

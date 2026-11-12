@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
+import FormActionFooter from '../common/FormActionFooter';
 import { useAuth } from '../../context/AuthContext';
 import { useHousehold } from '../../context/HouseholdContext';
 import { useToast } from '../../context/ToastContext';
-import { User, Phone, Mail, Shield, Heart } from 'lucide-react';
+import { User, Phone, Mail } from 'lucide-react';
 
 const RELATIONSHIPS = ['Spouse', 'Parent', 'Child', 'Sibling', 'Tenant', 'Other'];
 
@@ -116,62 +116,61 @@ export default function MemberFormModal({ isOpen, onClose, memberToEdit = null }
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Edit Family Member' : 'Invite Family Member'}
-      subtitle="Household members can approve gate arrivals, book services, and create guest passes."
       maxWidth="max-w-lg"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Full Name */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
             Full Name <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <User className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+            <User className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
               placeholder="e.g. Ananya Kumar"
-              className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+              className={`w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
                 errors.name ? 'border-rose-400 bg-rose-50/20' : ''
               }`}
             />
           </div>
-          {errors.name && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.name}</p>}
+          {errors.name && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.name}</p>}
         </div>
 
         {/* Phone & Relationship */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Phone Number <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <Phone className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+              <Phone className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="10-digit number"
-                className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                className={`w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
                   errors.phone ? 'border-rose-400 bg-rose-50/20' : ''
                 }`}
               />
             </div>
-            {errors.phone && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.phone}</p>}
+            {errors.phone && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.phone}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Relationship <span className="text-rose-500">*</span>
             </label>
             <select
               name="relationship"
               value={formData.relationship}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl font-medium text-black dark:text-white focus:outline-none"
             >
               {RELATIONSHIPS.map((rel) => (
                 <option key={rel} value={rel}>
@@ -184,42 +183,28 @@ export default function MemberFormModal({ isOpen, onClose, memberToEdit = null }
 
         {/* Email */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
-            Email Address (Optional)
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
+            Email Address
           </label>
           <div className="relative">
-            <Mail className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+            <Mail className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="e.g. ananya@example.com"
-              className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
+              className="w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
             />
           </div>
         </div>
 
-        {/* Role permission preview pill */}
-        <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-start gap-2.5 text-xs">
-          <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-blue-950">Household Member Permissions</p>
-            <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">
-              Family members can take live decisions for courier arrivals, request maintenance, and view apartment notices.
-            </p>
-          </div>
-        </div>
-
-        {/* Footer buttons */}
-        <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-3 border-t border-blue-100">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting} className="w-full sm:w-auto">
-            Cancel
-          </Button>
-          <Button variant="primary" size="md" type="submit" loading={submitting} className="w-full sm:w-auto">
-            {isEditing ? 'Save Changes' : 'Invite to Household'}
-          </Button>
-        </div>
+        {/* Footer: Frosted Glass Icon-Only Action Cards */}
+        <FormActionFooter
+          onCancel={onClose}
+          submitting={submitting}
+          submitLabel={isEditing ? 'Save Changes' : 'Invite to Household'}
+        />
       </form>
     </Modal>
   );

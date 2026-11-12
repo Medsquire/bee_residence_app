@@ -3,45 +3,30 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useToast } from '../context/ToastContext';
-import PageHeader from '../components/common/PageHeader';
-import Badge from '../components/common/Badge';
-import Button from '../components/common/Button';
-import Modal from '../components/common/Modal';
 import VisitorCard from '../components/visitors/VisitorCard';
 import VisitorDetailsModal from '../components/visitors/VisitorDetailsModal';
-import VisitorDecisionModal from '../components/visitors/VisitorDecisionModal';
-import ServiceRequestModal from '../components/services/ServiceRequestModal';
-import ServiceDetailsModal from '../components/services/ServiceDetailsModal';
-import CreatePassModal from '../components/passes/CreatePassModal';
-import PassTicketModal from '../components/passes/PassTicketModal';
-import VehicleFormModal from '../components/vehicles/VehicleFormModal';
-import MemberFormModal from '../components/family/MemberFormModal';
-import { formatDate } from '../utils/formatters';
+import { submitVisitorDecision } from '../utils/visitorActions';
+import { getTimeGreeting } from '../utils/formatters';
 import {
   UserCheck,
   Wrench,
   QrCode,
   Car,
+  Users,
   Bell,
   ArrowRight,
-  Plus,
-  Shield,
+  ChevronRight,
   Building2,
-  Megaphone,
-  AlertCircle,
-  Calendar,
-  Sparkles,
-  Users
+  Home
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { currentUser, isHead } = useAuth();
+  const { currentUser } = useAuth();
   const {
     household,
+    members,
     visitors,
-    serviceRequests,
-    announcements,
     pendingVisitorsCount,
     activeServicesCount,
     activePassesCount,
@@ -53,368 +38,195 @@ export default function DashboardPage() {
 
   // Modals state
   const [activeVisitorDetails, setActiveVisitorDetails] = useState(null);
-  const [decisionModalData, setDecisionModalData] = useState({ isOpen: false, visitor: null, decision: null });
-  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
-  const [activeServiceDetails, setActiveServiceDetails] = useState(null);
-  const [isPassModalOpen, setIsPassModalOpen] = useState(false);
-  const [createdPassModal, setCreatedPassModal] = useState(null);
-  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
-  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [activeAnnouncement, setActiveAnnouncement] = useState(null);
 
   const handleDecisionClick = (visitor, decision) => {
-    setDecisionModalData({ isOpen: true, visitor, decision });
-  };
-
-  const handleConfirmDecision = (visitorId, decision, note) => {
-    const res = decideVisitor(visitorId, decision, note, currentUser);
-    if (res.success) {
-      addToast({
-        title: 'Visitor Decision Recorded',
-        message: res.message,
-        type: 'success'
-      });
-    } else {
-      addToast({
-        title: 'Decision Error',
-        message: res.message,
-        type: 'error'
-      });
-    }
+    submitVisitorDecision({
+      visitor,
+      decision,
+      currentUser,
+      decideVisitor,
+      addToast
+    });
   };
 
   const recentVisitors = visitors.slice(0, 3);
-  const recentServices = serviceRequests.slice(0, 2);
+
+  const overviewCards = [
+    {
+      id: 'visitors',
+      label: 'Pending Visitors',
+      value: pendingVisitorsCount,
+      icon: UserCheck,
+      to: '/visitors',
+      variant: 'white',
+      hasPulse: pendingVisitorsCount > 0
+    },
+    {
+      id: 'services',
+      label: 'Active Services',
+      value: activeServicesCount,
+      icon: Wrench,
+      to: '/services',
+      variant: 'blue'
+    },
+    {
+      id: 'passes',
+      label: 'Upcoming Passes',
+      value: activePassesCount,
+      icon: QrCode,
+      to: '/visitors?tab=pre-approved',
+      variant: 'white'
+    },
+    {
+      id: 'vehicles',
+      label: 'Vehicles',
+      value: vehiclesCount,
+      icon: Car,
+      to: '/vehicles',
+      variant: 'blue'
+    },
+    {
+      id: 'family',
+      label: 'Family Members',
+      value: members.length,
+      icon: Users,
+      to: '/family',
+      variant: 'white'
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      value: unreadNotificationsCount,
+      icon: Bell,
+      to: '/notifications',
+      variant: 'blue',
+      hasPulse: unreadNotificationsCount > 0
+    }
+  ];
 
   return (
-    <div className="space-y-5 sm:space-y-6">
-      {/* Top Banner - Sleek Glass Blue Banner */}
-      <div className="glass-blue-banner rounded-3xl p-4 sm:p-6 text-white relative overflow-hidden shadow-glass-lg">
-        {/* Subtle inner atmospheric glow */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-sky-300/25 rounded-full blur-3xl pointer-events-none" />
+    <div className="space-y-3 sm:space-y-4">
+      {/* Top Greeting & Flat Card */}
+      <div className="glass-greeting-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-blue-400/15 dark:bg-blue-500/20 blur-2xl pointer-events-none"
+        />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-100 bg-white/20 px-2.5 py-0.5 rounded-full border border-white/30 backdrop-blur-xs">
+        <div className="relative z-10 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-normal text-black dark:text-white tracking-tight truncate">
+              {getTimeGreeting()},{' '}
+              <span className="text-blue-600 dark:text-sky-400 font-medium">
+                {currentUser?.name?.split(' ')[0]}
+              </span>
+            </h2>
+            <p className="mt-2 inline-flex items-center gap-1.5 text-xs sm:text-sm font-normal text-black dark:text-white bg-blue-50/90 dark:bg-slate-800/90 px-3 py-1 rounded-full border border-blue-200/80 dark:border-slate-700">
+              <Building2 className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.6} />
+              <span>
                 {household.tower} • Flat {household.flatNumber}
               </span>
-              <span className="text-xs text-blue-100/90 font-medium">
-                {household.apartmentName}
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Good day, {currentUser?.name?.split(' ')[0]}!
-            </h2>
-            <p className="text-xs sm:text-sm text-blue-100/90 font-medium mt-0.5">
-              Welcome back to your smart residential command center.
             </p>
           </div>
 
-          {/* Quick Action Buttons - Mobile Responsive 2-Col or Flex */}
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2.5 shrink-0 w-full md:w-auto">
-            <Button
-              variant="secondary"
-              size="md"
-              icon={QrCode}
-              onClick={() => setIsPassModalOpen(true)}
-              className="w-full sm:w-auto justify-center text-xs sm:text-sm px-3 sm:px-4 py-2 bg-white/95 text-blue-900 border-white hover:bg-white shadow-md font-bold"
-            >
-              New Guest Pass
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              icon={Wrench}
-              onClick={() => setIsServiceModalOpen(true)}
-              className="w-full sm:w-auto justify-center text-xs sm:text-sm px-3 sm:px-4 py-2 bg-white/20 hover:bg-white/30 text-white border-white/40 shadow-xs backdrop-blur-md font-bold"
-            >
-              Book Service
-            </Button>
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-sky-500 text-white shadow-md shadow-blue-500/20 flex items-center justify-center shrink-0">
+            <Home className="w-5 h-5" strokeWidth={1.5} />
           </div>
         </div>
       </div>
 
-      {/* Metrics Row - 2 cols on mobile, 5 on desktop */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
-        {/* Pending Visitors */}
-        <div
-          onClick={() => navigate('/visitors')}
-          className="glass-card rounded-2xl p-3.5 sm:p-4 cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/80 group-hover:scale-110 transition-transform">
-              <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            {pendingVisitorsCount > 0 && (
-              <span className="h-2 w-2 rounded-full bg-blue-600 animate-ping"></span>
-            )}
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-blue-950">{pendingVisitorsCount}</p>
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5 truncate">Pending Visitors</p>
-        </div>
+      {/* 6 Compact White & Blue Glassmorphism Cards (3 per row) */}
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+        {overviewCards.map((card) => {
+          const Icon = card.icon;
+          const isBlueCard = card.variant === 'blue';
 
-        {/* Active Services */}
-        <div
-          onClick={() => navigate('/services')}
-          className="glass-card rounded-2xl p-3.5 sm:p-4 cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-sky-50 text-sky-600 border border-sky-100/80 group-hover:scale-110 transition-transform">
-              <Wrench className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-blue-950">{activeServicesCount}</p>
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5 truncate">Active Services</p>
-        </div>
+          return (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => navigate(card.to)}
+              className={`relative overflow-hidden rounded-2xl p-2 sm:p-3.5 text-left flex flex-col justify-between cursor-pointer group hover:-translate-y-0.5 active:scale-[0.98] ${
+                isBlueCard ? 'glass-stat-blue' : 'glass-stat-white'
+              }`}
+            >
+              {/* Subtle glass ambient glow */}
+              <div
+                className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl pointer-events-none transition-colors duration-300 ${
+                  isBlueCard
+                    ? 'bg-blue-400/20 group-hover:bg-blue-400/30'
+                    : 'bg-sky-300/20 group-hover:bg-blue-400/25'
+                }`}
+              />
 
-        {/* Upcoming Passes */}
-        <div
-          onClick={() => navigate('/visitors?tab=pre-approved')}
-          className="glass-card rounded-2xl p-3.5 sm:p-4 cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100/80 group-hover:scale-110 transition-transform">
-              <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-blue-950">{activePassesCount}</p>
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5 truncate">Upcoming Passes</p>
-        </div>
-
-        {/* Registered Vehicles */}
-        <div
-          onClick={() => navigate('/vehicles')}
-          className="glass-card rounded-2xl p-3.5 sm:p-4 cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-100/80 group-hover:scale-110 transition-transform">
-              <Car className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-blue-950">{vehiclesCount}</p>
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5 truncate">Vehicles</p>
-        </div>
-
-        {/* Unread Alerts */}
-        <div
-          onClick={() => navigate('/notifications')}
-          className="col-span-2 sm:col-span-1 glass-card rounded-2xl p-3.5 sm:p-4 cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/80 group-hover:scale-110 transition-transform">
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-blue-950">{unreadNotificationsCount}</p>
-          <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-0.5 truncate">Unread Alerts</p>
-        </div>
-      </div>
-
-      {/* Main Grid: Left column (Visitors & Services), Right column (Announcements & Shortcuts) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        {/* Left Column (2 Cols) */}
-        <div className="lg:col-span-2 space-y-5 sm:space-y-6">
-          {/* Recent Visitor Activity */}
-          <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-glass">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-black text-blue-950">Recent Visitor Activity</h3>
-                <p className="text-xs text-slate-500 font-medium">Live gate arrivals & real-time check-ins</p>
-              </div>
-              <Link
-                to="/visitors"
-                className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 transition-colors"
-              >
-                <span>View all</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="space-y-3">
-              {recentVisitors.map((visitor) => (
-                <VisitorCard
-                  key={visitor.id}
-                  visitor={visitor}
-                  onInspect={(v) => setActiveVisitorDetails(v)}
-                  onDecision={handleDecisionClick}
-                />
-              ))}
-
-              {recentVisitors.length === 0 && (
-                <p className="text-xs text-slate-400 text-center py-6">
-                  No recent visitor logs.
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Active Service Requests */}
-          <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-glass">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-black text-blue-950">Active Service Requests</h3>
-                <p className="text-xs text-slate-500 font-medium">Current apartment maintenance & repairs</p>
-              </div>
-              <Link
-                to="/services"
-                className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 transition-colors"
-              >
-                <span>All services</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="space-y-3">
-              {recentServices.map((ticket) => (
+              {/* Top row: Slim icon chip + live indicator & arrow */}
+              <div className="relative z-10 w-full flex items-center justify-between mb-2 sm:mb-2.5">
                 <div
-                  key={ticket.id}
-                  onClick={() => setActiveServiceDetails(ticket)}
-                  className="p-3.5 sm:p-4 rounded-2xl glass-card border border-blue-100/80 hover:border-blue-300 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105 ${
+                    isBlueCard
+                      ? 'bg-white/95 dark:bg-slate-800 text-blue-600 dark:text-sky-400 border border-blue-100 dark:border-slate-700 shadow-sm shadow-blue-500/10'
+                      : 'bg-gradient-to-br from-blue-600 to-sky-500 text-white border border-blue-400/30 shadow-sm shadow-blue-500/20'
+                  }`}
                 >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                        {ticket.id}
-                      </span>
-                      <span className="text-xs font-bold text-blue-950">
-                        {ticket.category}
-                      </span>
-                      <Badge
-                        variant={
-                          ticket.status === 'Completed'
-                            ? 'success'
-                            : ticket.status === 'Cancelled'
-                            ? 'danger'
-                            : 'primary'
-                        }
-                        size="sm"
-                      >
-                        {ticket.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs sm:text-sm font-bold text-blue-950 truncate">{ticket.title}</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Preferred: {ticket.preferredDate} ({ticket.preferredTimeSlot.split(' ')[0]})
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="text-xs font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 shrink-0"
-                  >
-                    <span>Inspect</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={1.5} />
                 </div>
-              ))}
 
-              {recentServices.length === 0 && (
-                <div className="text-center py-6 text-xs text-slate-400">
-                  No active service requests right now.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column (1 Col): Community Notices & Quick Actions */}
-        <div className="space-y-5 sm:space-y-6">
-          {/* Community Announcements */}
-          <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-glass">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                  <Megaphone className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider">
-                  Community Notices
-                </h3>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {announcements.map((ann) => (
-                <div
-                  key={ann.id}
-                  onClick={() => setActiveAnnouncement(ann)}
-                  className="p-3.5 rounded-2xl bg-white/70 border border-blue-100/80 hover:border-blue-300 hover:bg-blue-50/40 cursor-pointer transition-all shadow-xs"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                      {ann.badge}
+                <div className="flex items-center gap-1">
+                  {card.hasPulse && (
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
                     </span>
-                    <span className="text-[10px] text-slate-400">{ann.date}</span>
-                  </div>
-                  <h4 className="text-xs font-bold text-blue-950 line-clamp-1">{ann.title}</h4>
-                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                    {ann.summary}
-                  </p>
+                  )}
+                  <ChevronRight
+                    className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all"
+                    strokeWidth={1.6}
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Shortcuts */}
-          <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-glass space-y-2.5">
-            <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-2">
-              Apartment Management Actions
-            </h3>
-
-            <button
-              onClick={() => setIsPassModalOpen(true)}
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/80 hover:bg-blue-50/80 border border-blue-100 transition-all text-xs font-bold text-blue-950 text-left shadow-xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                  <QrCode className="w-4 h-4" />
-                </div>
-                <span>Create Guest Pass</span>
               </div>
-              <Plus className="w-4 h-4 text-blue-600" />
-            </button>
 
-            <button
-              onClick={() => setIsServiceModalOpen(true)}
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/80 hover:bg-blue-50/80 border border-blue-100 transition-all text-xs font-bold text-blue-950 text-left shadow-xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-sky-50 text-sky-600 border border-sky-100">
-                  <Wrench className="w-4 h-4" />
-                </div>
-                <span>Book Service</span>
+              {/* Count & Title */}
+              <div className="relative z-10 min-w-0">
+                <p className="text-lg sm:text-[22px] font-normal text-black dark:text-white tracking-tight leading-none tabular-nums">
+                  {card.value}
+                </p>
+                <p className="text-[11px] sm:text-xs font-normal text-black dark:text-white mt-1 sm:mt-1.5 leading-snug line-clamp-2">
+                  {card.label}
+                </p>
               </div>
-              <Plus className="w-4 h-4 text-sky-600" />
             </button>
+          );
+        })}
+      </div>
 
-            <button
-              onClick={() => setIsVehicleModalOpen(true)}
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/80 hover:bg-blue-50/80 border border-blue-100 transition-all text-xs font-bold text-blue-950 text-left shadow-xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-100">
-                  <Car className="w-4 h-4" />
-                </div>
-                <span>Register Vehicle</span>
-              </div>
-              <Plus className="w-4 h-4 text-blue-700" />
-            </button>
+      {/* Recent Visitor Activity */}
+      <div className="glass-stat-white rounded-2xl p-3 sm:p-4">
+        <div className="flex items-center justify-between mb-2.5">
+          <h3 className="text-sm sm:text-base font-medium text-black dark:text-white">Recent Visitor Activity</h3>
+          <Link
+            to="/visitors"
+            className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 inline-flex items-center gap-1 transition-colors shrink-0"
+          >
+            <span>View all</span>
+            <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+          </Link>
+        </div>
 
-            {isHead && (
-              <button
-                onClick={() => setIsMemberModalOpen(true)}
-                className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/80 hover:bg-blue-50/80 border border-blue-100 transition-all text-xs font-bold text-blue-950 text-left shadow-xs"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-                    <Users className="w-4 h-4" />
-                  </div>
-                  <span>Invite Family Member</span>
-                </div>
-                <Plus className="w-4 h-4 text-indigo-600" />
-              </button>
-            )}
-          </div>
+        <div className="space-y-2">
+          {recentVisitors.map((visitor) => (
+            <VisitorCard
+              key={visitor.id}
+              visitor={visitor}
+              onInspect={(v) => setActiveVisitorDetails(v)}
+              onDecision={handleDecisionClick}
+            />
+          ))}
+
+          {recentVisitors.length === 0 && (
+            <p className="text-xs text-slate-800 dark:text-slate-200 text-center py-6">
+              No recent visitor logs.
+            </p>
+          )}
         </div>
       </div>
 
@@ -429,72 +241,6 @@ export default function DashboardPage() {
           handleDecisionClick(v, dec);
         }}
       />
-
-      <VisitorDecisionModal
-        isOpen={decisionModalData.isOpen}
-        visitor={decisionModalData.visitor}
-        decision={decisionModalData.decision}
-        onClose={() => setDecisionModalData({ isOpen: false, visitor: null, decision: null })}
-        onConfirm={handleConfirmDecision}
-      />
-
-      <ServiceRequestModal
-        isOpen={isServiceModalOpen}
-        onClose={() => setIsServiceModalOpen(false)}
-      />
-
-      <ServiceDetailsModal
-        isOpen={!!activeServiceDetails}
-        ticket={activeServiceDetails}
-        onClose={() => setActiveServiceDetails(null)}
-      />
-
-      <CreatePassModal
-        isOpen={isPassModalOpen}
-        onClose={() => setIsPassModalOpen(false)}
-        onPassCreated={(newPass) => setCreatedPassModal(newPass)}
-      />
-
-      <PassTicketModal
-        isOpen={!!createdPassModal}
-        pass={createdPassModal}
-        onClose={() => setCreatedPassModal(null)}
-      />
-
-      <VehicleFormModal
-        isOpen={isVehicleModalOpen}
-        onClose={() => setIsVehicleModalOpen(false)}
-      />
-
-      <MemberFormModal
-        isOpen={isMemberModalOpen}
-        onClose={() => setIsMemberModalOpen(false)}
-      />
-
-      {/* Announcement Detail Modal */}
-      <Modal
-        isOpen={!!activeAnnouncement}
-        onClose={() => setActiveAnnouncement(null)}
-        title={activeAnnouncement?.title}
-        subtitle={`Posted on ${activeAnnouncement?.date} • ${activeAnnouncement?.badge}`}
-        maxWidth="max-w-lg"
-      >
-        {activeAnnouncement && (
-          <div className="space-y-4 text-xs">
-            <div className="p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200 text-blue-950 font-semibold leading-relaxed">
-              {activeAnnouncement.summary}
-            </div>
-            <p className="text-slate-700 leading-relaxed text-sm">
-              {activeAnnouncement.details}
-            </p>
-            <div className="flex justify-end pt-3 border-t border-blue-100">
-              <Button variant="secondary" size="md" onClick={() => setActiveAnnouncement(null)}>
-                Close Notice
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

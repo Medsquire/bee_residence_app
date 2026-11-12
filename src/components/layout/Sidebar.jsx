@@ -11,13 +11,11 @@ import {
   LogOut,
   Building2,
   ShieldCheck,
-  ChevronRight,
-  Hexagon,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useHousehold } from '../../context/HouseholdContext';
-import Badge from '../common/Badge';
+import beeLogo from '../../assets/bee-property-logo.jpg';
 
 export default function Sidebar({ isOpen, onClose }) {
   const { currentUser, isHead, logout } = useAuth();
@@ -76,63 +74,70 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-blue-950/25 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-900/20 dark:bg-slate-950/45 backdrop-blur-sm z-[45] lg:hidden transition-opacity"
           onClick={onClose}
         />
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-72 bg-white/85 backdrop-blur-2xl text-slate-800 flex flex-col transition-transform duration-300 ease-in-out border-r border-white/90 shadow-2xl lg:shadow-soft ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed top-3 bottom-3 left-3 z-50 lg:z-30 w-[272px] max-w-[calc(100vw-24px)] lg:w-[264px] rounded-[28px] glass-sidebar text-black dark:text-white flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen
+            ? 'translate-x-0 opacity-100'
+            : '-translate-x-[calc(100%+24px)] opacity-0 pointer-events-none lg:translate-x-0 lg:opacity-100 lg:pointer-events-auto'
         }`}
       >
+        {/* Subtle internal glass refraction glows */}
+        <div className="pointer-events-none absolute -top-12 -left-10 w-40 h-40 rounded-full bg-sky-400/20 dark:bg-sky-500/15 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-12 -right-10 w-36 h-36 rounded-full bg-blue-400/15 dark:bg-indigo-500/15 blur-2xl" />
+
         {/* Brand Header */}
-        <div className="p-5 border-b border-blue-100/70 bg-gradient-to-b from-blue-50/50 to-transparent">
+        <div className="relative p-4 sm:p-5 border-b border-white/55 dark:border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-sky-400 flex items-center justify-center shadow-lg shadow-blue-500/25 text-white font-black text-xl tracking-tight border border-white/50">
-                B
+              <div className="w-10 h-10 rounded-xl bg-white/85 dark:bg-slate-900/80 shadow-sm shadow-blue-500/10 border border-white/90 dark:border-white/15 backdrop-blur-md flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                <img
+                  src={beeLogo}
+                  alt="Bee Property Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-base tracking-tight text-blue-950">
-                    BEE Residence
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-200">
-                    Pro
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium">Smart Living, Simplified.</p>
+              <div className="leading-tight">
+                <span className="block font-medium text-base tracking-tight text-black dark:text-white">
+                  Bee Property
+                </span>
+                <span className="block font-medium text-[10px] tracking-[0.12em] uppercase text-blue-600 dark:text-sky-400 mt-0.5">
+                  Residence APP
+                </span>
               </div>
             </div>
 
             {/* Mobile close button */}
             <button
               onClick={onClose}
-              className="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              className="lg:hidden w-8 h-8 rounded-full bg-white/55 dark:bg-slate-800/60 border border-white/75 dark:border-white/15 text-black dark:text-white flex items-center justify-center hover:bg-white/80 dark:hover:bg-slate-700/70 backdrop-blur-md transition-colors"
               aria-label="Close menu"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" strokeWidth={1.75} />
             </button>
           </div>
 
           {/* Household Info Pill */}
-          <div className="mt-4 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100/90 flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-white shadow-xs text-blue-600 border border-blue-100">
-              <Building2 className="w-4 h-4" />
+          <div className="mt-4 p-2.5 rounded-2xl bg-white/45 dark:bg-slate-800/45 backdrop-blur-md border border-white/75 dark:border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] flex items-center gap-2.5">
+            <div className="p-1.5 rounded-xl bg-white/80 dark:bg-slate-900/75 shadow-xs text-blue-600 dark:text-sky-400 border border-white/90 dark:border-white/15">
+              <Building2 className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-blue-950 truncate">
+              <p className="text-xs font-medium text-black dark:text-white truncate">
                 {household.tower} • Flat {household.flatNumber}
               </p>
-              <p className="text-[11px] text-slate-500 truncate">{household.apartmentName}</p>
+              <p className="text-[11px] font-normal text-slate-800 dark:text-slate-300 truncate">{household.apartmentName}</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1.5">
-          <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-blue-600 mb-2">
+        <nav className="relative flex-1 overflow-y-auto px-3.5 py-4 space-y-1.5">
+          <p className="px-3 text-[10px] font-medium uppercase tracking-wider text-blue-600 dark:text-sky-400 mb-2">
             Main Menu
           </p>
           {navItems.map((item) => {
@@ -143,10 +148,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 to={item.to}
                 onClick={() => onClose && onClose()}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group ${
+                  `flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-normal transition-all duration-200 group ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/25'
-                      : 'text-slate-600 hover:bg-blue-50/80 hover:text-blue-700'
+                      ? 'bg-gradient-to-r from-blue-600/90 to-sky-500/85 text-white border border-white/50 shadow-[0_8px_18px_-4px_rgba(37,99,235,0.35),inset_0_1px_0_rgba(255,255,255,0.45)] font-medium backdrop-blur-md'
+                      : 'text-black dark:text-slate-100 border border-transparent hover:bg-white/50 dark:hover:bg-white/10 hover:border-white/65 dark:hover:border-white/15 hover:shadow-xs hover:text-blue-700 dark:hover:text-sky-300'
                   }`
                 }
               >
@@ -155,17 +160,18 @@ export default function Sidebar({ isOpen, onClose }) {
                     <div className="flex items-center gap-3">
                       <Icon
                         className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                          isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600'
+                          isActive ? 'text-white' : 'text-slate-800 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400'
                         }`}
+                        strokeWidth={1.5}
                       />
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium backdrop-blur-xs ${
                           isActive
-                            ? 'bg-white text-blue-700 shadow-xs'
-                            : 'bg-blue-100 text-blue-700'
+                            ? 'bg-white/90 text-blue-700 shadow-xs'
+                            : 'bg-white/65 dark:bg-slate-800/70 border border-white/75 dark:border-white/15 text-blue-700 dark:text-sky-300'
                         }`}
                       >
                         {item.badge.count}
@@ -179,19 +185,19 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         {/* User Card & Logout Footer */}
-        <div className="p-3.5 border-t border-blue-100/70 bg-gradient-to-t from-blue-50/50 to-transparent">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-white/80 border border-blue-100/80 shadow-xs">
+        <div className="relative p-3.5 border-t border-white/55 dark:border-white/10">
+          <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white/45 dark:bg-slate-800/45 backdrop-blur-md border border-white/75 dark:border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <div className="flex items-center gap-2.5 min-w-0">
               <img
                 src={currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'}
                 alt={currentUser?.name}
-                className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-200"
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-white/80 dark:ring-sky-400/35"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-blue-950 truncate">{currentUser?.name}</p>
+                <p className="text-xs font-medium text-black dark:text-white truncate">{currentUser?.name}</p>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <ShieldCheck className="w-3 h-3 text-blue-600 shrink-0" />
-                  <span className="text-[10px] font-bold text-blue-600 uppercase">
+                  <ShieldCheck className="w-3 h-3 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.5} />
+                  <span className="text-[10px] font-medium text-blue-600 dark:text-sky-400 uppercase">
                     {isHead ? 'Household Head' : 'Member'}
                   </span>
                 </div>
@@ -200,10 +206,10 @@ export default function Sidebar({ isOpen, onClose }) {
             <button
               onClick={logout}
               title="Sign Out"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+              className="p-1.5 rounded-xl bg-white/55 dark:bg-slate-900/50 border border-white/75 dark:border-white/15 text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/50 transition-colors"
               aria-label="Logout"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4" strokeWidth={1.5} />
             </button>
           </div>
         </div>

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
+import FormActionFooter from '../common/FormActionFooter';
 import { useAuth } from '../../context/AuthContext';
 import { useHousehold } from '../../context/HouseholdContext';
 import { useToast } from '../../context/ToastContext';
 import confetti from 'canvas-confetti';
-import { Wrench, Calendar, Clock, AlertTriangle, Building, Phone, User } from 'lucide-react';
 
 const SERVICE_CATEGORIES = [
   'Apartment Issues',
@@ -41,7 +40,7 @@ const URGENCY_LEVELS = [
 
 export default function ServiceRequestModal({ isOpen, onClose }) {
   const { currentUser } = useAuth();
-  const { household, addServiceRequest } = useHousehold();
+  const { addServiceRequest } = useHousehold();
   const { addToast } = useToast();
 
   const today = new Date().toISOString().split('T')[0];
@@ -133,37 +132,20 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
       isOpen={isOpen}
       onClose={onClose}
       title="Book a Service Request"
-      subtitle="Estate maintenance team will verify availability and assign an authorized technician."
       maxWidth="max-w-2xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Resident Location & Info Pill */}
-        <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 flex flex-wrap items-center justify-between gap-2.5 text-xs">
-          <div className="flex items-center gap-2">
-            <Building className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-slate-700">Service Location:</span>
-            <span className="font-bold text-blue-950">
-              {household.tower}, Flat {household.flatNumber}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-slate-700">Requested by:</span>
-            <span className="font-bold text-blue-950">{currentUser?.name}</span>
-          </div>
-        </div>
-
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Category & Urgency */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Service Category <span className="text-rose-500">*</span>
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
+              className="w-full px-3.5 py-2 glass-input rounded-xl text-xs sm:text-sm font-medium text-black dark:text-white focus:outline-none"
             >
               {SERVICE_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -174,14 +156,14 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Urgency Level <span className="text-rose-500">*</span>
             </label>
             <select
               name="urgency"
               value={formData.urgency}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
+              className="w-full px-3.5 py-2 glass-input rounded-xl text-xs sm:text-sm font-medium text-black dark:text-white focus:outline-none"
             >
               {URGENCY_LEVELS.map((u) => (
                 <option key={u.level} value={u.level}>
@@ -194,7 +176,7 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
 
         {/* Problem Title */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
             Problem Title / Short Summary <span className="text-rose-500">*</span>
           </label>
           <input
@@ -203,16 +185,16 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
             value={formData.title}
             onChange={handleChange}
             placeholder="e.g. Geyser not heating water in common bathroom"
-            className={`w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+            className={`w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
               errors.title ? 'border-rose-400 bg-rose-50/20' : ''
             }`}
           />
-          {errors.title && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.title}</p>}
+          {errors.title && <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.title}</p>}
         </div>
 
         {/* Detailed Problem Description */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
             Detailed Problem Description <span className="text-rose-500">*</span>
           </label>
           <textarea
@@ -221,19 +203,19 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
             value={formData.description}
             onChange={handleChange}
             placeholder="Describe the issue, appliance brand/model if applicable, and when it started..."
-            className={`w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+            className={`w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
               errors.description ? 'border-rose-400 bg-rose-50/20' : ''
             }`}
           />
           {errors.description && (
-            <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.description}</p>
+            <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.description}</p>
           )}
         </div>
 
         {/* Preferred Date & Time Slot */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Preferred Date <span className="text-rose-500">*</span>
             </label>
             <input
@@ -242,22 +224,22 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
               min={today}
               value={formData.preferredDate}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
             />
             {errors.preferredDate && (
-              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.preferredDate}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.preferredDate}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Preferred Time Slot <span className="text-rose-500">*</span>
             </label>
             <select
               name="preferredTimeSlot"
               value={formData.preferredTimeSlot}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl font-medium text-black dark:text-white focus:outline-none"
             >
               {TIME_SLOTS.map((slot) => (
                 <option key={slot} value={slot}>
@@ -270,8 +252,8 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
 
         {/* Additional instructions */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
-            Entry Instructions / Notes (Optional)
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
+            Entry Instructions / Notes
           </label>
           <input
             type="text"
@@ -279,19 +261,16 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
             value={formData.instructions}
             onChange={handleChange}
             placeholder="e.g. Please ring bell twice, dog at home"
-            className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl focus:outline-none"
+            className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
           />
         </div>
 
-        {/* Footer buttons */}
-        <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-3 border-t border-blue-100">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting} className="w-full sm:w-auto">
-            Cancel
-          </Button>
-          <Button variant="primary" size="md" type="submit" loading={submitting} className="w-full sm:w-auto">
-            Submit Service Request
-          </Button>
-        </div>
+        {/* Footer: Frosted Glass Icon-Only Action Cards */}
+        <FormActionFooter
+          onCancel={onClose}
+          submitting={submitting}
+          submitLabel="Submit Service Request"
+        />
       </form>
     </Modal>
   );

@@ -1,20 +1,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PageHeader from '../components/common/PageHeader';
+import AddIconButton from '../components/common/AddIconButton';
 import SearchInput from '../components/common/SearchInput';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import EmptyState from '../components/common/EmptyState';
 import VisitorCard from '../components/visitors/VisitorCard';
 import VisitorDetailsModal from '../components/visitors/VisitorDetailsModal';
-import VisitorDecisionModal from '../components/visitors/VisitorDecisionModal';
 import PassCard from '../components/passes/PassCard';
+import { submitVisitorDecision } from '../utils/visitorActions';
 import CreatePassModal from '../components/passes/CreatePassModal';
 import PassTicketModal from '../components/passes/PassTicketModal';
 import { useAuth } from '../context/AuthContext';
 import { useHousehold } from '../context/HouseholdContext';
 import { useToast } from '../context/ToastContext';
-import { UserCheck, Sparkles, Filter, ShieldAlert, QrCode, Plus } from 'lucide-react';
+import { UserCheck, Filter, QrCode, Plus } from 'lucide-react';
 
 const TABS = [
   { id: 'all', label: 'All Visitors' },
@@ -48,7 +49,6 @@ export default function VisitorsPage() {
     visitors,
     pendingVisitorsCount,
     decideVisitor,
-    simulateIncomingVisitor,
     preApprovedPasses,
     activePassesCount
   } = useHousehold();
@@ -62,7 +62,6 @@ export default function VisitorsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
   const [activeVisitorDetails, setActiveVisitorDetails] = useState(null);
-  const [decisionModalData, setDecisionModalData] = useState({ isOpen: false, visitor: null, decision: null });
 
   // Pre-approved pass modals
   const [isCreatePassOpen, setIsCreatePassOpen] = useState(false);
@@ -85,34 +84,14 @@ export default function VisitorsPage() {
     }
   };
 
-  const handleSimulateVisitor = () => {
-    const visitor = simulateIncomingVisitor();
-    addToast({
-      title: 'Gate Arrival Simulated!',
-      message: `${visitor.name} arrived at ${visitor.gateNumber}. Pending approval.`,
-      type: 'info'
-    });
-  };
-
   const handleDecisionClick = (visitor, decision) => {
-    setDecisionModalData({ isOpen: true, visitor, decision });
-  };
-
-  const handleConfirmDecision = (visitorId, decision, note) => {
-    const res = decideVisitor(visitorId, decision, note, currentUser);
-    if (res.success) {
-      addToast({
-        title: 'Decision Recorded',
-        message: res.message,
-        type: 'success'
-      });
-    } else {
-      addToast({
-        title: 'Cannot Process Request',
-        message: res.message,
-        type: 'error'
-      });
-    }
+    submitVisitorDecision({
+      visitor,
+      decision,
+      currentUser,
+      decideVisitor,
+      addToast
+    });
   };
 
   // Filtered visitor list
@@ -169,50 +148,35 @@ export default function VisitorsPage() {
   }, [preApprovedPasses, passStatusFilter, searchQuery]);
 
   return (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="space-y-3 sm:space-y-4">
       {/* Page Header */}
       <PageHeader
         title="My Visitors"
         badge={
           activeTab === 'pre-approved' ? (
             activePassesCount > 0 ? (
-              <Badge variant="primary" size="md">
+              <Badge variant="primary" size="sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-sky-400 animate-pulse" />
                 {activePassesCount} Active
               </Badge>
             ) : null
           ) : pendingVisitorsCount > 0 ? (
-            <Badge variant="primary" size="md">
+            <Badge variant="primary" size="sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-sky-400 animate-pulse" />
               {pendingVisitorsCount} Pending
             </Badge>
           ) : null
         }
-        action={
-          activeTab === 'pre-approved' ? (
-            <Button
-              variant="primary"
-              size="md"
-              icon={Plus}
-              onClick={() => setIsCreatePassOpen(true)}
-              className="w-full sm:w-auto text-xs sm:text-sm"
-            >
-              Create Visitor Pass
-            </Button>
-          ) : (
-            <Button
-              variant="primary"
-              size="md"
-              icon={Sparkles}
-              onClick={handleSimulateVisitor}
-              className="w-full sm:w-auto text-xs sm:text-sm"
-            >
-              Simulate Gate Visitor
-            </Button>
-          )
+        inlineAction={
+          <AddIconButton
+            onClick={() => setIsCreatePassOpen(true)}
+            label="Create Pre-Visitor Pass"
+          />
         }
       />
 
       {/* Tabs bar - Horizontal sliding on mobile */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 border-b border-blue-100">
+      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 border-b border-blue-100/80 dark:border-slate-800">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const count =
@@ -226,18 +190,18 @@ export default function VisitorsPage() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap transition-all ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                  : 'glass-card text-slate-700 hover:text-blue-600 hover:border-blue-200'
+                  ? 'bg-gradient-to-r from-blue-600 to-sky-500 text-white font-medium shadow-sm shadow-blue-500/25'
+                  : 'glass-stat-white font-normal text-black dark:text-white hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${
                   isActive
                     ? 'bg-white text-blue-700'
-                    : 'bg-blue-50 text-blue-700'
+                    : 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-sky-300'
                 }`}
               >
                 {count}
@@ -261,18 +225,18 @@ export default function VisitorsPage() {
               <button
                 key={tab.id}
                 onClick={() => setPassStatusFilter(tab.id)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-blue-700 text-white font-bold shadow-xs'
-                    : 'glass-card text-slate-600 hover:text-blue-700'
+                    ? 'bg-blue-600 text-white font-medium shadow-xs'
+                    : 'glass-stat-white font-normal text-black dark:text-white hover:text-blue-600'
                 }`}
               >
                 <span>{tab.label}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${
                     isActive
                       ? 'bg-white text-blue-700'
-                      : 'bg-blue-50 text-blue-700'
+                      : 'bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-sky-300'
                   }`}
                 >
                   {count}
@@ -301,11 +265,11 @@ export default function VisitorsPage() {
           />
 
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-blue-500 shrink-0" />
+            <Filter className="w-4 h-4 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.5} />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-bold text-blue-950 focus:outline-none"
+              className="w-full sm:w-auto px-3 py-2.5 glass-input rounded-xl text-xs font-medium text-black dark:text-white focus:outline-none"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -366,12 +330,12 @@ export default function VisitorsPage() {
               }
               description={
                 activeTab === 'Pending'
-                  ? 'All visitors have been processed. Use the "Simulate Gate Visitor" button above to test new gate requests.'
+                  ? 'All visitors have been processed. Tap the + icon above to create a pre-approved visitor pass.'
                   : 'Try adjusting your search query or category filters to find records.'
               }
-              actionLabel="Simulate Gate Arrival"
-              actionIcon={Sparkles}
-              onAction={handleSimulateVisitor}
+              actionLabel="Create Pre-Visitor Pass"
+              actionIcon={Plus}
+              onAction={() => setIsCreatePassOpen(true)}
             />
           )}
         </div>
@@ -387,14 +351,6 @@ export default function VisitorsPage() {
           setActiveVisitorDetails(null);
           handleDecisionClick(v, dec);
         }}
-      />
-
-      <VisitorDecisionModal
-        isOpen={decisionModalData.isOpen}
-        visitor={decisionModalData.visitor}
-        decision={decisionModalData.decision}
-        onClose={() => setDecisionModalData({ isOpen: false, visitor: null, decision: null })}
-        onConfirm={handleConfirmDecision}
       />
 
       {/* Pre-Approved Pass Modals */}

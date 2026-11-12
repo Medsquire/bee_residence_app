@@ -1,14 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import PageHeader from '../components/common/PageHeader';
+import AddIconButton from '../components/common/AddIconButton';
 import SearchInput from '../components/common/SearchInput';
 import Badge from '../components/common/Badge';
-import Button from '../components/common/Button';
 import EmptyState from '../components/common/EmptyState';
 import PassCard from '../components/passes/PassCard';
 import CreatePassModal from '../components/passes/CreatePassModal';
 import PassTicketModal from '../components/passes/PassTicketModal';
 import { useHousehold } from '../context/HouseholdContext';
-import { QrCode, Plus, ShieldCheck, Ticket } from 'lucide-react';
+import { QrCode, Plus } from 'lucide-react';
 
 const TABS = [
   { id: 'all', label: 'All Passes' },
@@ -57,16 +57,11 @@ export default function PreApprovedPage() {
             </Badge>
           ) : null
         }
-        action={
-          <Button
-            variant="primary"
-            size="md"
-            icon={Plus}
+        inlineAction={
+          <AddIconButton
             onClick={() => setIsCreateOpen(true)}
-            className="w-full sm:w-auto text-xs sm:text-sm"
-          >
-            Create Visitor Pass
-          </Button>
+            label="Create Visitor Pass"
+          />
         }
       />
 

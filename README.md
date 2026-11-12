@@ -92,6 +92,10 @@ A residential community management web application built for apartment residents
 - **Animations & Effects**: `canvas-confetti`, custom CSS glassmorphism, micro-transitions
 - **Persistence**: LocalStorage with automatic schema serialization and seed recovery
 
+## 📁 Application Data
+
+The application's initial/demo data is organized by topic in [`src/data/residence_json.json`](./src/data/residence_json.json). Each topic has a descriptive `header` and a `data` entry. Runtime changes are still persisted in the browser's LocalStorage.
+
 ---
 
 ## 🚀 Getting Started

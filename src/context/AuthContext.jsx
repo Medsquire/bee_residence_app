@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { INITIAL_USERS } from '../data/initialData';
+import { INITIAL_USERS } from '../data';
 import { loadFromStorage, saveToStorage, removeFromStorage } from '../utils/storage';
 
 const AUTH_STORAGE_KEY = 'bee_residence_auth_user';
@@ -51,6 +51,32 @@ export function AuthProvider({ children }) {
     return { success: true, user: matched };
   };
 
+  const loginWithOtp = (phone, otp) => {
+    const cleaned = ('' + phone).replace(/\D/g, '').slice(-10);
+    if (cleaned.length !== 10) {
+      return { success: false, error: 'Please enter a valid 10-digit mobile number.' };
+    }
+    if (('' + otp).trim() !== '123456') {
+      return { success: false, error: 'Invalid OTP. Please check and try again.' };
+    }
+
+    const matched = INITIAL_USERS.find(
+      (u) => ('' + u.phone).replace(/\D/g, '').slice(-10) === cleaned
+    );
+
+    const formattedPhone = `+91 ${cleaned.slice(0, 5)} ${cleaned.slice(5)}`;
+    const sessionUser = matched || {
+      ...INITIAL_USERS[0],
+      phone: cleaned,
+      fullPhone: formattedPhone
+    };
+
+    setCurrentUser(sessionUser);
+    setRememberMe(true);
+    saveToStorage(REMEMBER_KEY, true);
+    return { success: true, user: sessionUser };
+  };
+
   const logout = () => {
     setCurrentUser(null);
     removeFromStorage(AUTH_STORAGE_KEY);
@@ -80,6 +106,7 @@ export function AuthProvider({ children }) {
         isAuthenticated: !!currentUser,
         isHead,
         login,
+        loginWithOtp,
         logout,
         switchUser,
         updateProfile,

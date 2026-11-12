@@ -1,6 +1,5 @@
-import React from 'react';
-import Badge from '../common/Badge';
-import Button from '../common/Button';
+import React, { useState } from 'react';
+import ImagePreviewModal from '../common/ImagePreviewModal';
 import { getTimeAgo, formatDate } from '../../utils/formatters';
 import {
   Clock,
@@ -12,163 +11,191 @@ import {
   Eye,
   Check,
   X,
-  Package
+  ChevronRight
 } from 'lucide-react';
 
 export default function VisitorCard({ visitor, onInspect, onDecision }) {
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const isPending = visitor.status === 'Pending';
+  const photoUrl =
+    visitor.photo ||
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
 
-  const categoryVariants = {
-    Courier: 'purple',
-    'Food Delivery': 'primary',
-    Friends: 'info',
-    'Service Technician': 'gold',
-    Other: 'neutral'
+  const statusMeta = {
+    Pending: {
+      label: 'Pending',
+      pill: 'bg-blue-50/95 dark:bg-blue-950/70 text-blue-700 dark:text-sky-300 border-blue-200/80 dark:border-blue-800/60'
+    },
+    Approved: {
+      label: 'Approved',
+      pill: 'bg-emerald-50/90 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60'
+    },
+    'Leave at Gate': {
+      label: 'At Gate',
+      pill: 'bg-sky-50/90 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60'
+    },
+    Rejected: {
+      label: 'Denied',
+      pill: 'bg-rose-50/90 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60'
+    },
+    Completed: {
+      label: 'Completed',
+      pill: 'bg-white/85 dark:bg-slate-800 text-black dark:text-slate-200 border-blue-100/80 dark:border-slate-700'
+    }
   };
 
-  const statusBadges = {
-    Pending: { variant: 'primary', label: 'Pending Approval' },
-    Approved: { variant: 'success', label: 'Entry Approved' },
-    'Leave at Gate': { variant: 'gold', label: 'Left at Gate' },
-    Rejected: { variant: 'danger', label: 'Entry Denied' },
-    Completed: { variant: 'neutral', label: 'Completed' }
+  const statusInfo = statusMeta[visitor.status] || {
+    label: visitor.status,
+    pill: 'bg-white/85 dark:bg-slate-800 text-black dark:text-white border-blue-100/80 dark:border-slate-700'
   };
-
-  const statusInfo = statusBadges[visitor.status] || { variant: 'neutral', label: visitor.status };
 
   return (
-    <div
-      className={`glass-card rounded-2xl border transition-all duration-200 overflow-hidden ${
-        isPending
-          ? 'border-blue-400 ring-2 ring-blue-100/80 shadow-md'
-          : 'border-white/80 hover:border-blue-200'
-      }`}
-    >
-      <div className="p-3.5 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          {/* Avatar and basic info */}
-          <div className="flex items-start gap-3 sm:gap-3.5 min-w-0">
-            <img
-              src={visitor.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'}
-              alt={visitor.name}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover ring-2 ring-blue-100 shadow-xs shrink-0"
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <h4 className="font-bold text-blue-950 text-sm truncate">{visitor.name}</h4>
-                <Badge variant={categoryVariants[visitor.category] || 'neutral'} size="sm">
-                  {visitor.category}
-                </Badge>
-              </div>
+    <>
+      <div
+        className={`rounded-2xl transition-all duration-200 overflow-hidden ${
+          isPending ? 'glass-stat-blue' : 'glass-stat-white'
+        }`}
+      >
+        <div className="p-3 sm:p-3.5">
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            {/* Avatar */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsImageOpen(true);
+              }}
+              title="View Full Photo"
+              aria-label={`View full photo of ${visitor.name}`}
+              className="rounded-xl overflow-hidden ring-1 ring-white/95 dark:ring-slate-700 shadow-xs shrink-0 cursor-zoom-in hover:opacity-90 active:scale-95 transition-all"
+            >
+              <img
+                src={photoUrl}
+                alt={visitor.name}
+                className="w-10 h-10 sm:w-11 sm:h-11 object-cover block"
+              />
+            </button>
 
-              <p className="text-xs text-slate-500 mt-0.5 truncate">
-                {visitor.purpose || visitor.company || 'Visitor to Flat 1204'}
-              </p>
-
-              <div className="flex items-center gap-2.5 sm:gap-3 mt-2 text-[11px] text-slate-400 flex-wrap">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-blue-500" />
-                  {getTimeAgo(visitor.arrivedAt)}
-                </span>
-                {visitor.vehicleNumber && visitor.vehicleNumber !== 'None (Walk-in)' && (
-                  <span className="flex items-center gap-1 font-mono font-bold text-blue-900 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                    <Car className="w-3 h-3 text-blue-500" />
-                    {visitor.vehicleNumber}
-                  </span>
+          {/* Main Classified Info */}
+          <div className="flex-1 min-w-0">
+            {/* Title & Compact Status Pill */}
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="font-medium text-black dark:text-white text-[13px] sm:text-sm leading-snug truncate min-w-0">
+                {visitor.name}
+              </h4>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium shrink-0 ${statusInfo.pill}`}
+              >
+                {isPending && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-sky-400 animate-pulse" />
                 )}
-                <span className="hidden sm:flex items-center gap-1">
-                  <Shield className="w-3 h-3 text-blue-500" />
-                  {visitor.gateNumber}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Status Badge */}
-          <div className="shrink-0">
-            <Badge variant={statusInfo.variant} size="md">
-              {isPending && <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-ping"></span>}
-              {statusInfo.label}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Parcel/Item Note if applicable */}
-        {visitor.itemsToLeave && isPending && (
-          <div className="mt-3 p-2 rounded-xl bg-blue-50/80 border border-blue-200/80 flex items-center gap-2 text-xs text-blue-950">
-            <Package className="w-4 h-4 text-blue-600 shrink-0" />
-            <span>Items to drop: <strong>{visitor.itemsToLeave}</strong></span>
-          </div>
-        )}
-
-        {/* Decision audit info for already-processed records */}
-        {!isPending && (
-          <div className="mt-3 p-2.5 rounded-xl bg-blue-50/40 border border-blue-100/60 flex items-center justify-between text-xs text-slate-500">
-            <div className="flex items-center gap-1.5 min-w-0 pr-2">
-              {visitor.status === 'Approved' ? (
-                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-              ) : visitor.status === 'Rejected' ? (
-                <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-              ) : (
-                <PackageCheck className="w-4 h-4 text-sky-600 shrink-0" />
-              )}
-              <span className="truncate">
-                Decided by <strong className="text-blue-950">{visitor.decisionBy || 'Resident'}</strong>
-                {visitor.decidedAt && ` • ${formatDate(visitor.decidedAt)}`}
+                <span>{statusInfo.label}</span>
               </span>
             </div>
-            <button
-              onClick={() => onInspect(visitor)}
-              className="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline shrink-0"
-            >
-              Details
-            </button>
+
+            {/* Category + Time + Gate */}
+            <div className="flex items-center gap-1.5 mt-1 text-[11px] font-normal text-black dark:text-slate-200 flex-wrap">
+              <span className="text-[10px] font-medium text-blue-700 dark:text-sky-300 bg-white/85 dark:bg-slate-800/80 px-1.5 py-[1px] rounded-md border border-blue-200/70 dark:border-slate-700">
+                {visitor.category}
+              </span>
+              <span className="text-blue-400 dark:text-slate-500">•</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="w-3 h-3 text-blue-600 dark:text-sky-400" strokeWidth={1.5} />
+                {getTimeAgo(visitor.arrivedAt)}
+              </span>
+              {visitor.gateNumber && (
+                <>
+                  <span className="hidden sm:inline text-blue-400 dark:text-slate-500">•</span>
+                  <span className="hidden sm:inline-flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-blue-600 dark:text-sky-400" strokeWidth={1.5} />
+                    {visitor.gateNumber}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Compact Vehicle Chip */}
+            {visitor.vehicleNumber && visitor.vehicleNumber !== 'None (Walk-in)' && (
+              <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-mono font-normal text-black dark:text-white bg-white/80 dark:bg-slate-800/80 px-2 py-0.5 rounded-lg border border-blue-100/90 dark:border-slate-700">
+                  <Car className="w-3 h-3 text-blue-600 dark:text-sky-400" strokeWidth={1.5} />
+                  {visitor.vehicleNumber}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Action footer for pending visitors - Mobile Friendly Responsive Buttons */}
-      {isPending && (
-        <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-blue-50/50 border-t border-blue-100/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-          <button
-            onClick={() => onInspect(visitor)}
-            className="text-xs font-bold text-slate-600 hover:text-blue-600 inline-flex items-center justify-center gap-1 py-1"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>View Details</span>
-          </button>
+      {/* Frosted Glass Icon-Only Action Bar */}
+      {isPending ? (
+        <div className="px-3 sm:px-3.5 pb-3 pt-0.5">
+          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-white/45 dark:bg-slate-900/45 backdrop-blur-md border border-white/80 dark:border-slate-700/70 shadow-xs">
+            <button
+              type="button"
+              onClick={() => onInspect(visitor)}
+              title="View Details"
+              aria-label="View Details"
+              className="h-8 rounded-xl bg-white/75 dark:bg-slate-800/75 border border-blue-100/80 dark:border-slate-700 text-black dark:text-white hover:text-blue-600 dark:hover:text-sky-400 hover:bg-white inline-flex items-center justify-center active:scale-[0.97] transition-all"
+            >
+              <Eye className="w-4 h-4" strokeWidth={1.6} />
+            </button>
 
-          <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              icon={Check}
+            <button
+              type="button"
               onClick={() => onDecision(visitor, 'Approved')}
-              className="text-xs px-2 sm:px-3 py-1.5"
+              title="Approve Entry"
+              aria-label="Approve Entry"
+              className="h-8 rounded-xl bg-gradient-to-r from-blue-600/90 to-sky-500/90 border border-blue-400/40 text-white shadow-xs shadow-blue-500/20 hover:from-blue-600 hover:to-sky-500 inline-flex items-center justify-center active:scale-[0.97] transition-all"
             >
-              Approve
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={Package}
-              onClick={() => onDecision(visitor, 'Leave at Gate')}
-              className="text-xs px-2 sm:px-3 py-1.5"
-            >
-              At Gate
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              icon={X}
+              <Check className="w-4 h-4" strokeWidth={2} />
+            </button>
+
+            <button
+              type="button"
               onClick={() => onDecision(visitor, 'Rejected')}
-              className="text-xs px-2 sm:px-3 py-1.5"
+              title="Reject Entry"
+              aria-label="Reject Entry"
+              className="h-8 rounded-xl bg-rose-50/75 dark:bg-rose-950/45 border border-rose-200/75 dark:border-rose-800/60 text-rose-600 dark:text-rose-300 hover:bg-rose-600 hover:text-white hover:border-rose-600 inline-flex items-center justify-center active:scale-[0.97] transition-all"
             >
-              Reject
-            </Button>
+              <X className="w-4 h-4" strokeWidth={1.8} />
+            </button>
           </div>
+        </div>
+      ) : (
+        <div className="px-3 sm:px-3.5 py-2 bg-white/40 dark:bg-slate-900/35 border-t border-blue-100/60 dark:border-slate-700/70 flex items-center justify-between text-[11px] font-normal text-black dark:text-slate-200">
+          <div className="flex items-center gap-1.5 min-w-0 pr-2">
+            {visitor.status === 'Approved' ? (
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.5} />
+            ) : visitor.status === 'Rejected' ? (
+              <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" strokeWidth={1.5} />
+            ) : (
+              <PackageCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0" strokeWidth={1.5} />
+            )}
+            <span className="truncate">
+              Decided by <span className="font-medium text-black dark:text-white">{visitor.decisionBy || 'Resident'}</span>
+              {visitor.decidedAt && ` • ${formatDate(visitor.decidedAt)}`}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onInspect(visitor)}
+            className="text-[11px] font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 inline-flex items-center gap-0.5 shrink-0"
+          >
+            <span>Details</span>
+            <ChevronRight className="w-3 h-3" strokeWidth={1.6} />
+          </button>
         </div>
       )}
     </div>
+
+    <ImagePreviewModal
+      isOpen={isImageOpen}
+      onClose={() => setIsImageOpen(false)}
+      src={photoUrl}
+      alt={visitor.name}
+      subtitle={visitor.category}
+    />
+  </>
   );
 }

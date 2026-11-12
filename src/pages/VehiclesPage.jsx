@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import PageHeader from '../components/common/PageHeader';
+import AddIconButton from '../components/common/AddIconButton';
 import SearchInput from '../components/common/SearchInput';
 import Badge from '../components/common/Badge';
-import Button from '../components/common/Button';
 import EmptyState from '../components/common/EmptyState';
 import VehicleCard from '../components/vehicles/VehicleCard';
 import VehicleFormModal from '../components/vehicles/VehicleFormModal';
 import { useHousehold } from '../context/HouseholdContext';
-import { Car, Plus, ShieldCheck, MapPin } from 'lucide-react';
+import { Car, Plus, MapPin } from 'lucide-react';
 
 export default function VehiclesPage() {
   const { vehicles, household, vehiclesCount } = useHousehold();
@@ -38,19 +38,14 @@ export default function VehiclesPage() {
             {vehiclesCount} Registered
           </Badge>
         }
-        action={
-          <Button
-            variant="primary"
-            size="md"
-            icon={Plus}
+        inlineAction={
+          <AddIconButton
             onClick={() => {
               setVehicleToEdit(null);
               setIsFormOpen(true);
             }}
-            className="w-full sm:w-auto text-xs sm:text-sm"
-          >
-            Register Vehicle
-          </Button>
+            label="Register Vehicle"
+          />
         }
       />
 

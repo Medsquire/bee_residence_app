@@ -1,327 +1,323 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import Button from '../components/common/Button';
-import Modal from '../components/common/Modal';
 import {
-  Phone,
-  Lock,
-  Eye,
-  EyeOff,
-  Building2,
-  ShieldCheck,
-  Sparkles,
-  HelpCircle,
   ArrowRight,
-  Shield
+  ShieldCheck,
+  Phone,
+  Pencil,
+  RotateCw,
+  Loader2
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import beeLogo from '../assets/bee-property-logo.jpg';
+
+const EMPTY_OTP = ['', '', '', '', '', ''];
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, availableUsers } = useAuth();
-  const { addToast } = useToast();
+  const { loginWithOtp } = useAuth();
 
-  const [phone, setPhone] = useState('9876543210');
-  const [password, setPassword] = useState('bee123');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [phone, setPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpDigits, setOtpDigits] = useState(EMPTY_OTP);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotPhone, setForgotPhone] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
+  const [resent, setResent] = useState(false);
 
-  const handleSubmit = (e) => {
+  const otpRefs = useRef([]);
+
+  const formattedPhone = phone.length === 10
+    ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`
+    : `+91 ${phone}`;
+
+  const handlePhoneChange = (e) => {
+    const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setPhone(cleaned);
+    if (error) setError('');
+  };
+
+  const focusOtpIndex = (index) => {
+    setTimeout(() => {
+      otpRefs.current[index]?.focus();
+    }, 20);
+  };
+
+  const handleSendOtp = (e) => {
     e.preventDefault();
     setError('');
 
-    if (!phone) {
-      setError('Please enter your mobile phone number.');
+    if (phone.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number.');
       return;
     }
-    if (!password) {
-      setError('Please enter your account password.');
+
+    setOtpDigits(EMPTY_OTP);
+    setOtpSent(true);
+    setResent(false);
+    focusOtpIndex(0);
+  };
+
+  const handleEditPhone = () => {
+    setOtpSent(false);
+    setOtpDigits(EMPTY_OTP);
+    setResent(false);
+    setError('');
+  };
+
+  const handleResendOtp = () => {
+    setOtpDigits(EMPTY_OTP);
+    setError('');
+    setResent(true);
+    setTimeout(() => setResent(false), 2000);
+    focusOtpIndex(0);
+  };
+
+  const applyPastedDigits = (rawDigits, startIndex = 0) => {
+    const digits = rawDigits.replace(/\D/g, '').slice(0, 6 - startIndex);
+    if (!digits) return;
+
+    const next = [...otpDigits];
+    for (let i = 0; i < digits.length; i += 1) {
+      if (startIndex + i < 6) {
+        next[startIndex + i] = digits[i];
+      }
+    }
+    setOtpDigits(next);
+    if (error) setError('');
+
+    const targetIndex = Math.min(startIndex + digits.length, 5);
+    otpRefs.current[targetIndex]?.focus();
+  };
+
+  const handleOtpChange = (index, rawValue) => {
+    const digits = rawValue.replace(/\D/g, '');
+    if (digits.length > 1) {
+      applyPastedDigits(digits, index);
+      return;
+    }
+
+    const next = [...otpDigits];
+    next[index] = digits;
+    setOtpDigits(next);
+    if (error) setError('');
+
+    if (digits && index < 5) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace') {
+      if (otpDigits[index]) {
+        const next = [...otpDigits];
+        next[index] = '';
+        setOtpDigits(next);
+      } else if (index > 0) {
+        const next = [...otpDigits];
+        next[index - 1] = '';
+        setOtpDigits(next);
+        otpRefs.current[index - 1]?.focus();
+      }
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && index < 5) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (index, e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData?.getData('text') || '';
+    applyPastedDigits(pasted, index);
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError('');
+
+    const otpCode = otpDigits.join('');
+    if (otpCode.length < 6) {
+      setError('Please enter the 6-digit OTP.');
       return;
     }
 
     setLoading(true);
     setTimeout(() => {
-      const res = login(phone, password, rememberMe);
+      const res = loginWithOtp(phone, otpCode);
       setLoading(false);
       if (res.success) {
-        addToast({
-          title: `Welcome, ${res.user.name}!`,
-          message: `Logged in to Flat 1204 (${res.user.role === 'HEAD' ? 'Household Head' : 'Member'}).`,
-          type: 'success'
-        });
         navigate('/dashboard');
       } else {
         setError(res.error);
       }
-    }, 400);
-  };
-
-  const handleQuickLogin = (user) => {
-    setPhone(user.phone);
-    setPassword('bee123');
-    setError('');
-    const res = login(user.phone, 'bee123', true);
-    if (res.success) {
-      addToast({
-        title: `Logged in as ${user.name}`,
-        message: `Welcome to Flat 1204 (${user.role === 'HEAD' ? 'Head of Household' : 'Household Member'}).`,
-        type: 'success'
-      });
-      navigate('/dashboard');
-    }
+    }, 250);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50/50 to-indigo-50/40 flex items-center justify-center p-3.5 sm:p-6 relative overflow-hidden">
-      {/* Decorative ambient glassmorphism blurred light orbs */}
-      <div className="fixed top-12 left-10 w-80 sm:w-96 h-80 sm:h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="fixed bottom-12 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-sky-300/30 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="fixed top-1/2 left-1/3 w-64 h-64 bg-indigo-200/20 rounded-full blur-2xl pointer-events-none -z-10" />
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-gradient-to-br from-[#e8f2ff] via-[#dbeafe] to-[#e0e7ff] dark:from-[#070d1a] dark:via-[#0b1730] dark:to-[#0f172a]">
+      {/* Ambient liquid-glass refraction orbs visible behind frosted containers */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -top-20 -left-16 w-80 h-80 rounded-full bg-blue-400/45 dark:bg-blue-500/25 blur-3xl" />
+        <div className="absolute top-1/3 -right-16 w-80 h-80 rounded-full bg-sky-300/45 dark:bg-sky-500/20 blur-3xl" />
+        <div className="absolute -bottom-24 left-1/4 w-80 h-80 rounded-full bg-indigo-400/35 dark:bg-indigo-500/25 blur-3xl" />
+        {/* Floating glass rim accents framing the central card */}
+        <div className="hidden sm:block absolute top-1/4 left-1/2 -translate-x-64 w-28 h-28 rounded-full bg-white/30 dark:bg-sky-400/10 border border-white/65 dark:border-white/15 backdrop-blur-md" />
+        <div className="hidden sm:block absolute bottom-1/4 right-1/2 translate-x-64 w-24 h-24 rounded-full bg-white/25 dark:bg-indigo-400/10 border border-white/60 dark:border-white/15 backdrop-blur-md" />
+      </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Brand Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-sky-400 shadow-glow mb-4 text-white font-black text-2xl tracking-tighter ring-4 ring-white/60 border border-white/60">
-            B
+      <div className="w-full max-w-sm sm:max-w-md relative z-10">
+        {/* Compact Brand Mark */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/85 dark:border-white/20 shadow-[0_14px_30px_-8px_rgba(37,99,235,0.28),inset_0_1px_0_rgba(255,255,255,0.9)] mb-3.5 p-2 overflow-hidden">
+            <img
+              src={beeLogo}
+              alt="Bee Property Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight">
-            BEE Residence
+          <h1 className="text-2xl sm:text-3xl font-medium text-black dark:text-white tracking-tight">
+            Bee Property
           </h1>
-          <p className="text-xs sm:text-sm font-semibold text-blue-600 mt-1">
-            Smart Living, Simplified.
+          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-blue-600 dark:text-sky-400 mt-1">
+            Residence APP
           </p>
-          <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-card border border-blue-200/80 text-blue-950 text-xs font-semibold">
-            <Building2 className="w-3.5 h-3.5 text-blue-600" />
-            <span>Bee Hive Residency • Flat A-1204</span>
-          </div>
         </div>
 
-        {/* Glassmorphic Login Card */}
-        <div className="glass-modal rounded-3xl p-5 sm:p-8 shadow-glass-lg border border-white/95">
-          <div className="mb-5 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-black text-blue-950">Resident Login</h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Enter your registered mobile number and password to access your apartment.
-            </p>
+        {/* Frosted Liquid-Glass Login Card */}
+        <div className="glass-login-card rounded-[30px] p-6 sm:p-7 relative overflow-hidden">
+          <div className="pointer-events-none absolute -top-10 -right-10 w-36 h-36 rounded-full bg-sky-300/25 dark:bg-sky-400/15 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-blue-400/20 dark:bg-indigo-500/15 blur-2xl" />
+
+          {/* Card Header */}
+          <div className="relative flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-black dark:text-white tracking-tight">
+                Sign In
+              </h2>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-white/55 dark:bg-slate-800/60 border border-white/80 dark:border-white/15 backdrop-blur-md flex items-center justify-center text-blue-600 dark:text-sky-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+              <ShieldCheck className="w-[18px] h-[18px]" strokeWidth={1.75} />
+            </div>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-2">
-              <span className="shrink-0">•</span>
+            <div
+              role="alert"
+              className="relative mb-4 px-3.5 py-2.5 rounded-2xl bg-rose-500/15 dark:bg-rose-500/20 backdrop-blur-md border border-rose-300/70 dark:border-rose-400/35 text-rose-700 dark:text-rose-200 text-xs font-medium flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Phone input with +91 country prefix */}
-            <div>
-              <label className="block text-xs font-bold text-blue-950 mb-1.5">
-                Mobile Number
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-0 pl-3.5 flex items-center pointer-events-none text-blue-700 font-bold text-xs border-r pr-2 border-blue-200">
-                  <span className="mr-1.5">🇮🇳</span>
-                  <span>+91</span>
-                </div>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="98765 43210"
-                  className="w-full pl-20 pr-4 py-2.5 sm:py-3 glass-input rounded-xl text-sm font-bold text-blue-950 focus:outline-none transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Password input with show/hide toggle */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-blue-950">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowForgotModal(true)}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-blue-500 absolute left-3.5 top-3.5" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full pl-10 pr-10 py-2.5 sm:py-3 glass-input rounded-xl text-sm font-semibold text-blue-950 focus:outline-none transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-blue-600"
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Remember me checkbox */}
-            <div className="flex items-center">
-              <input
-                id="rememberMe"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-blue-200 rounded focus:ring-blue-500 cursor-pointer"
-              />
-              <label htmlFor="rememberMe" className="ml-2 text-xs font-semibold text-slate-600 cursor-pointer">
-                Remember me on this device
-              </label>
-            </div>
-
-            {/* Sign in button */}
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full py-3 text-sm font-bold shadow-lg shadow-blue-500/25"
-              loading={loading}
-            >
-              Sign In to BEE Residence
-            </Button>
-          </form>
-
-          {/* Quick Demo Credentials Selector */}
-          <div className="mt-6 pt-5 border-t border-blue-100/80">
-            <div className="flex items-center gap-1.5 mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <p className="text-xs font-bold text-slate-700">
-                1-Click Demo Login Personas:
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin(availableUsers[0])}
-                className="p-2.5 rounded-xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200/90 text-left transition-all group shadow-xs active:scale-95"
-              >
-                <p className="text-xs font-black text-blue-950 group-hover:text-blue-700 truncate">
-                  Rajesh Kumar
-                </p>
-                <p className="text-[10px] font-bold text-blue-600 uppercase">
-                  Household Head
-                </p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin(availableUsers[1])}
-                className="p-2.5 rounded-xl bg-white/80 hover:bg-blue-50 border border-blue-200/90 text-left transition-all group shadow-xs active:scale-95"
-              >
-                <p className="text-xs font-black text-blue-950 group-hover:text-blue-700 truncate">
-                  Priya Kumar
-                </p>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">
-                  Family Member
-                </p>
-              </button>
-            </div>
-
-            <p className="text-[11px] text-center text-slate-400 mt-3 font-medium">
-              Default password: <code className="bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded text-blue-900 font-mono font-bold">bee123</code>
-            </p>
-          </div>
-        </div>
-
-        {/* Footer note */}
-        <p className="text-center text-xs text-slate-400 mt-6 font-medium">
-          © 2026 BEE Residence. Smart Living, Simplified. Demonstration build.
-        </p>
-      </div>
-
-      {/* Forgot Password Modal */}
-      <Modal
-        isOpen={showForgotModal}
-        onClose={() => {
-          setShowForgotModal(false);
-          setOtpSent(false);
-        }}
-        title="Reset Password"
-        subtitle="Verification OTP will be sent to your registered mobile number."
-        maxWidth="max-w-md"
-      >
-        <div className="space-y-4">
-          {!otpSent ? (
-            <>
+          <form onSubmit={otpSent ? handleLogin : handleSendOtp} className="relative space-y-5">
+            {!otpSent ? (
               <div>
-                <label className="block text-xs font-bold text-blue-950 mb-1.5">
-                  Registered Mobile Number
+                <label
+                  htmlFor="mobile-number"
+                  className="block text-xs font-medium text-slate-800 dark:text-slate-200 mb-2"
+                >
+                  Mobile Number
                 </label>
-                <input
-                  type="tel"
-                  value={forgotPhone}
-                  onChange={(e) => setForgotPhone(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl focus:outline-none"
-                />
+                <div className="flex items-center rounded-2xl bg-white/55 dark:bg-slate-900/55 backdrop-blur-md border border-white/85 dark:border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] focus-within:border-blue-500 focus-within:bg-white/80 dark:focus-within:bg-slate-900/80 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all overflow-hidden">
+                  <div className="pl-3.5 pr-3 py-3 flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-sky-300 border-r border-blue-200/70 dark:border-white/15 shrink-0">
+                    <Phone className="w-3.5 h-3.5" strokeWidth={1.75} />
+                    <span>+91</span>
+                  </div>
+                  <input
+                    id="mobile-number"
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    placeholder="Enter 10-digit number"
+                    autoComplete="tel-national"
+                    className="w-full px-3.5 py-3 bg-transparent text-sm font-medium tracking-wide text-black dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none"
+                  />
+                </div>
               </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  variant="secondary"
-                  size="md"
-                  onClick={() => setShowForgotModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => {
-                    if (forgotPhone.length >= 10) {
-                      setOtpSent(true);
-                      addToast({
-                        title: 'Demo OTP Sent',
-                        message: 'A 6-digit OTP has been dispatched to your phone (Demo OTP: 492810).',
-                        type: 'info'
-                      });
-                    }
-                  }}
-                >
-                  Send OTP
-                </Button>
+            ) : (
+              <div className="space-y-4">
+                {/* Confirmed Phone Glass Pill */}
+                <div className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-white/45 dark:bg-slate-800/45 backdrop-blur-md border border-white/75 dark:border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                  <div className="flex items-center gap-2 text-xs font-medium text-black dark:text-white">
+                    <Phone className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" strokeWidth={1.75} />
+                    <span>{formattedPhone}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleEditPhone}
+                    aria-label="Edit mobile number"
+                    title="Change Mobile Number"
+                    className="p-1.5 rounded-xl bg-white/65 dark:bg-slate-900/60 border border-white/80 dark:border-white/15 text-blue-600 dark:text-sky-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" strokeWidth={1.75} />
+                  </button>
+                </div>
+
+                {/* 6 Frosted Glass OTP Input Fields */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                      Enter OTP
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-700 dark:hover:text-sky-300 transition-colors"
+                    >
+                      <RotateCw className="w-3 h-3" strokeWidth={1.75} />
+                      <span>{resent ? 'Sent' : 'Resend'}</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-6 gap-2 sm:gap-2.5">
+                    {otpDigits.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => {
+                          otpRefs.current[idx] = el;
+                        }}
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                        onPaste={(e) => handleOtpPaste(idx, e)}
+                        aria-label={`OTP digit ${idx + 1}`}
+                        autoComplete={idx === 0 ? 'one-time-code' : 'off'}
+                        className={`h-12 sm:h-[52px] w-full text-center text-base sm:text-lg font-semibold font-mono rounded-2xl backdrop-blur-md border text-black dark:text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] focus:outline-none focus:ring-2 focus:ring-blue-500/25 transition-all ${
+                          digit
+                            ? 'bg-white/75 dark:bg-slate-800/75 border-blue-500/70 dark:border-sky-400/60'
+                            : 'bg-white/50 dark:bg-slate-900/50 border-white/80 dark:border-white/20 focus:border-blue-500 focus:bg-white/80 dark:focus:bg-slate-900/80'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className="text-center py-4 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100 shadow-xs">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h4 className="font-bold text-blue-950 text-sm">Demo Reset Dispatched</h4>
-              <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                In production, an SMS OTP is verified with the society database. For this demo, please use password <code className="font-bold text-blue-700">bee123</code>.
-              </p>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => {
-                  setShowForgotModal(false);
-                  setOtpSent(false);
-                }}
-              >
-                Back to Sign In
-              </Button>
-            </div>
-          )}
+            )}
+
+            {/* Primary Luminous Glass Action Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600/90 to-sky-500/85 hover:from-blue-600 hover:to-sky-500 border border-white/55 text-white text-sm font-semibold shadow-[0_12px_28px_-6px_rgba(37,99,235,0.45),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>{otpSent ? 'Login' : 'Send OTP'}</span>
+                  <ArrowRight className="w-4 h-4" strokeWidth={2} />
+                </>
+              )}
+            </button>
+          </form>
         </div>
-      </Modal>
+      </div>
     </div>
   );
 }

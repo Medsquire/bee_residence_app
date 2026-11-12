@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
+import FormActionFooter from '../common/FormActionFooter';
 import { useAuth } from '../../context/AuthContext';
 import { useHousehold } from '../../context/HouseholdContext';
 import { useToast } from '../../context/ToastContext';
 import confetti from 'canvas-confetti';
-import { QrCode, Calendar, Clock, User, Phone, Car, FileText } from 'lucide-react';
+import { User, Phone, Car } from 'lucide-react';
 
 const PASS_CATEGORIES = [
   'Guest / Family',
@@ -16,6 +16,14 @@ const PASS_CATEGORIES = [
   'Other'
 ];
 
+const createInitialFormData = (defaultDate) => ({
+  guestName: '',
+  guestPhone: '',
+  category: 'Guest / Family',
+  expectedDate: defaultDate,
+  vehicleNumber: ''
+});
+
 export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
   const { currentUser } = useAuth();
   const { createPreApprovedPass } = useHousehold();
@@ -23,16 +31,7 @@ export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  const [formData, setFormData] = useState({
-    guestName: '',
-    guestPhone: '',
-    category: 'Guest / Family',
-    purpose: '',
-    expectedDate: today,
-    expectedTime: '06:00 PM',
-    vehicleNumber: '',
-    instructions: 'Gate entry allowed with OTP or QR scan.'
-  });
+  const [formData, setFormData] = useState(() => createInitialFormData(today));
 
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -87,16 +86,7 @@ export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
       });
 
       // Reset
-      setFormData({
-        guestName: '',
-        guestPhone: '',
-        category: 'Guest / Family',
-        purpose: '',
-        expectedDate: today,
-        expectedTime: '06:00 PM',
-        vehicleNumber: '',
-        instructions: 'Gate entry allowed with OTP or QR scan.'
-      });
+      setFormData(createInitialFormData(today));
       setErrors({});
       onClose();
 
@@ -118,44 +108,43 @@ export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create Pre-Approved Visitor Pass"
-      subtitle="Generates an instant QR code and OTP for seamless entry at the security gate."
+      title="Pre Visitor Pass"
       maxWidth="max-w-xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Guest Name & Category */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Guest Name <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <User className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+              <User className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
               <input
                 type="text"
                 name="guestName"
                 value={formData.guestName}
                 onChange={handleChange}
                 placeholder="e.g. Vikram Sharma"
-                className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                className={`w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
                   errors.guestName ? 'border-rose-400 bg-rose-50/20' : ''
                 }`}
               />
             </div>
             {errors.guestName && (
-              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.guestName}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.guestName}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Visitor Category <span className="text-rose-500">*</span>
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl font-bold text-blue-950 focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl font-medium text-black dark:text-white focus:outline-none"
             >
               {PASS_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -166,49 +155,32 @@ export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
           </div>
         </div>
 
-        {/* Guest Phone & Purpose */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Guest Phone & Expected Date */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Phone Number <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <Phone className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+              <Phone className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
               <input
                 type="tel"
                 name="guestPhone"
                 value={formData.guestPhone}
                 onChange={handleChange}
                 placeholder="10-digit mobile number"
-                className={`w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
+                className={`w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none ${
                   errors.guestPhone ? 'border-rose-400 bg-rose-50/20' : ''
                 }`}
               />
             </div>
             {errors.guestPhone && (
-              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.guestPhone}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.guestPhone}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
-              Visit Purpose (Optional)
-            </label>
-            <input
-              type="text"
-              name="purpose"
-              value={formData.purpose}
-              onChange={handleChange}
-              placeholder="e.g. Dinner, Package, Personal Visit"
-              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Date & Time */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
+            <label className="block text-xs font-medium text-black dark:text-white mb-1">
               Expected Date <span className="text-rose-500">*</span>
             </label>
             <input
@@ -217,69 +189,38 @@ export default function CreatePassModal({ isOpen, onClose, onPassCreated }) {
               min={today}
               value={formData.expectedDate}
               onChange={handleChange}
-              className="w-full px-3.5 py-2.5 text-xs glass-input rounded-xl focus:outline-none"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
             />
             {errors.expectedDate && (
-              <p className="text-[11px] text-rose-500 mt-1 font-semibold">{errors.expectedDate}</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">{errors.expectedDate}</p>
             )}
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-blue-950 mb-1.5">
-              Expected Time Slot
-            </label>
-            <input
-              type="text"
-              name="expectedTime"
-              value={formData.expectedTime}
-              onChange={handleChange}
-              placeholder="e.g. 06:00 PM or Any Time"
-              className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-            />
           </div>
         </div>
 
         {/* Vehicle plate */}
         <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
-            Vehicle License Number (Optional)
+          <label className="block text-xs font-medium text-black dark:text-white mb-1">
+            Vehicle License Number
           </label>
           <div className="relative">
-            <Car className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
+            <Car className="w-4 h-4 text-blue-600 dark:text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none" strokeWidth={1.5} />
             <input
               type="text"
               name="vehicleNumber"
               value={formData.vehicleNumber}
               onChange={handleChange}
-              placeholder="e.g. MH 02 AB 1234 or leave blank for cab/walk-in"
-              className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none uppercase"
+              placeholder="e.g. MH 02 AB 1234 or Walk-in"
+              className="w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm glass-input rounded-xl focus:outline-none uppercase"
             />
           </div>
         </div>
 
-        {/* Instructions */}
-        <div>
-          <label className="block text-xs font-bold text-blue-950 mb-1.5">
-            Security Gate Instructions
-          </label>
-          <input
-            type="text"
-            name="instructions"
-            value={formData.instructions}
-            onChange={handleChange}
-            className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-          />
-        </div>
-
-        {/* Footer */}
-        <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-3 border-t border-blue-100">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={submitting} className="w-full sm:w-auto">
-            Cancel
-          </Button>
-          <Button variant="primary" size="md" type="submit" loading={submitting} className="w-full sm:w-auto">
-            Generate QR & OTP Pass
-          </Button>
-        </div>
+        {/* Footer: Frosted Glass Icon-Only Action Cards */}
+        <FormActionFooter
+          onCancel={onClose}
+          submitting={submitting}
+          submitLabel="Approve & Generate Pass"
+        />
       </form>
     </Modal>
   );
