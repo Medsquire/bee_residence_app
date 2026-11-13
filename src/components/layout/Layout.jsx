@@ -17,11 +17,11 @@ export default function Layout() {
       {/* Sidebar for desktop & mobile drawer */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main app shell */}
-      <div className="flex-1 lg:pl-72 flex flex-col min-w-0">
+      {/* Main app shell with fixed distance from sidebar across all resolutions & zoom levels */}
+      <div className="flex-1 lg:pl-[276px] flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-24 sm:pb-6 lg:pb-12 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-3 sm:px-4 lg:pl-4 lg:pr-5 xl:pl-5 xl:pr-6 pt-2 sm:pt-2.5 pb-24 sm:pb-6 lg:pb-10 w-full">
           <Outlet />
         </main>
 

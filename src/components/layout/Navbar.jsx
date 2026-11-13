@@ -33,7 +33,7 @@ export default function Navbar() {
   return (
     <div
       ref={notifRef}
-      className={`sticky top-0 px-3 sm:px-6 lg:px-8 pt-1 sm:pt-1.5 max-w-7xl w-full mx-auto ${
+      className={`sticky top-0 relative px-3 sm:px-4 lg:pl-4 lg:pr-5 xl:pl-5 xl:pr-6 pt-2.5 sm:pt-3 pb-1 w-full ${
         showNotifMenu ? 'z-50' : 'z-30'
       }`}
     >
@@ -111,7 +111,7 @@ export default function Navbar() {
             onClick={() => setShowNotifMenu(false)}
           />
 
-          <div className="fixed left-3 right-3 top-[64px] sm:absolute sm:left-auto sm:right-6 lg:right-8 sm:top-full sm:mt-2 sm:w-96 glass-popover rounded-2xl overflow-hidden z-50 animate-in fade-in-50 duration-150">
+          <div className="fixed left-3 right-3 top-[64px] sm:absolute sm:left-auto sm:right-4 lg:right-5 xl:right-6 sm:top-full sm:mt-1.5 sm:w-96 glass-popover rounded-2xl overflow-hidden z-50 animate-in fade-in-50 duration-150">
             <div className="flex items-center justify-between px-4 py-3 bg-white/55 dark:bg-slate-800/55 border-b border-blue-100/80 dark:border-slate-700/80">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-black dark:text-white">Notifications</span>

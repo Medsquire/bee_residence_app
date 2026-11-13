@@ -32,7 +32,7 @@ export default function VehiclesPage() {
     <div className="space-y-4 sm:space-y-5">
       {/* Header */}
       <PageHeader
-        title="My Vehicles & Parking"
+        title="My Vehicles"
         badge={
           <Badge variant="primary" size="md">
             {vehiclesCount} Registered
@@ -50,7 +50,7 @@ export default function VehiclesPage() {
       />
 
       {/* Household Parking Slots Overview Pill */}
-      <div className="p-3.5 sm:p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 shadow-xs">
+      {/* <div className="p-3.5 sm:p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div>
           <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider block">
             Designated Apartment Parking Slots
@@ -71,7 +71,7 @@ export default function VehiclesPage() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Search Input */}
       <SearchInput

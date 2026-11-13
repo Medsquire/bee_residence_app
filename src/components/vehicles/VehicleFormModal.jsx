@@ -136,7 +136,7 @@ export default function VehicleFormModal({ isOpen, onClose, vehicleToEdit = null
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Edit Vehicle Details' : 'Register New Vehicle'}
-      subtitle="Registered vehicles receive automatic gate RFID clearance and designated parking."
+      subtitle="  "
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
