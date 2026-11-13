@@ -97,12 +97,7 @@ const TIME_SLOTS = [
   'Night (06:00 PM - 08:00 PM)'
 ];
 
-const URGENCY_LEVELS = [
-  { level: 'Urgent', desc: 'Active hazard/leak (Within 2-4 hrs)' },
-  { level: 'High', desc: 'Disruptive issue (Within 24 hrs)' },
-  { level: 'Normal', desc: 'Standard repair (1-2 days)' },
-  { level: 'Can Wait', desc: 'Routine / Non-critical' }
-];
+const URGENCY_LEVELS = ['Normal', 'Urgent'];
 
 export default function ServiceRequestModal({ isOpen, onClose }) {
   const { currentUser } = useAuth();
@@ -307,9 +302,9 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
                 onChange={handleChange}
                 className="w-full px-3.5 py-2 glass-input rounded-xl text-xs sm:text-sm font-medium text-black dark:text-white focus:outline-none"
               >
-                {URGENCY_LEVELS.map((u) => (
-                  <option key={u.level} value={u.level}>
-                    {u.level} — {u.desc}
+                {URGENCY_LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
                   </option>
                 ))}
               </select>
@@ -320,7 +315,7 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-medium text-black dark:text-white">
-                Photos <span className="text-black/45 dark:text-slate-400 font-normal">(Optional · Max 5)</span>
+                Photos <span className="text-black/45 dark:text-slate-400 font-normal"></span>
               </label>
               {photos.length > 0 && (
                 <span className="text-[11px] font-medium text-blue-600 dark:text-sky-400">
@@ -391,11 +386,9 @@ export default function ServiceRequestModal({ isOpen, onClose }) {
                 {photos.length === 0 && (
                   <div className="flex-1 py-1 px-1.5 text-left">
                     <p className="text-xs font-medium text-black/80 dark:text-white/90">
-                      Upload photos of the problem
+                      Upload photos
                     </p>
-                    <p className="text-[11px] text-black/50 dark:text-slate-400">
-                      Helps estate technician bring the right tools & parts
-                    </p>
+                   
                   </div>
                 )}
               </div>
