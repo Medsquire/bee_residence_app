@@ -179,7 +179,7 @@ export default function LoginPage() {
             Bee Property
           </h1>
           <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-blue-600 dark:text-sky-400 mt-1">
-            Residence APP
+            Resident Portal
           </p>
         </div>
 

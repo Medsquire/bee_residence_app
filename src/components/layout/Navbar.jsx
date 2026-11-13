@@ -31,14 +31,19 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="sticky top-2.5 sm:top-3 z-30 px-3 sm:px-6 lg:px-8 pt-2.5 sm:pt-3 max-w-7xl w-full mx-auto">
-      <header className="glass-floating-header rounded-[22px] px-3 sm:px-4 py-2 sm:py-2.5">
+    <div
+      ref={notifRef}
+      className={`sticky top-0 px-3 sm:px-6 lg:px-8 pt-1 sm:pt-1.5 max-w-7xl w-full mx-auto ${
+        showNotifMenu ? 'z-50' : 'z-30'
+      }`}
+    >
+      <header className="relative z-50 glass-floating-header rounded-[22px] px-3 sm:px-4 py-1.5 sm:py-2">
         <div className="flex items-center justify-between gap-3">
           {/* Left: Bee Property Logo & Brand Title */}
           <Link
             to="/dashboard"
             className="flex items-center gap-2.5 min-w-0 group"
-            aria-label="Bee Property Residence APP Home"
+            aria-label="Bee Property Resident Portal Home"
           >
             <div className="w-10 h-10 rounded-xl bg-white shadow-sm shadow-blue-500/10 border border-blue-100/80 flex items-center justify-center p-1 shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
               <img
@@ -52,18 +57,19 @@ export default function Navbar() {
                 Bee Property
               </span>
               <span className="block font-medium text-[10px] tracking-[0.12em] uppercase text-blue-600 dark:text-sky-400 truncate mt-0.5">
-                Residence APP
+                Resident Portal
               </span>
             </div>
           </Link>
 
           {/* Right: Frosted Circular Notifications & Profile */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* Notifications Dropdown */}
-            <div className="relative" ref={notifRef}>
+            {/* Notifications Trigger */}
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowNotifMenu(!showNotifMenu)}
+                aria-expanded={showNotifMenu}
                 className="relative w-9 h-9 rounded-full flex items-center justify-center text-black dark:text-white bg-white/55 dark:bg-slate-800/60 backdrop-blur-md border border-white/75 dark:border-slate-700 hover:bg-white/85 dark:hover:bg-slate-800 hover:text-blue-600 transition-all shadow-xs"
                 aria-label={
                   unreadNotificationsCount > 0
@@ -76,72 +82,6 @@ export default function Navbar() {
                   <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white" />
                 )}
               </button>
-
-              {showNotifMenu && (
-                <div className="absolute right-0 mt-2.5 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] glass-modal rounded-2xl overflow-hidden z-50 animate-in fade-in-50 duration-150">
-                  <div className="flex items-center justify-between px-4 py-3 bg-blue-50/60 dark:bg-slate-800/80 border-b border-blue-100/80 dark:border-slate-700">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-black dark:text-white">Notifications</span>
-                      {unreadNotificationsCount > 0 && (
-                        <Badge variant="primary" size="sm">
-                          {unreadNotificationsCount} new
-                        </Badge>
-                      )}
-                    </div>
-                    {unreadNotificationsCount > 0 && (
-                      <button
-                        onClick={markAllNotificationsRead}
-                        className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 transition-colors"
-                      >
-                        Mark all as read
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="max-h-80 overflow-y-auto divide-y divide-blue-50/60 dark:divide-slate-800">
-                    {notifications.slice(0, 5).map((n) => (
-                      <div
-                        key={n.id}
-                        onClick={() => {
-                          markNotificationRead(n.id);
-                          setShowNotifMenu(false);
-                          if (n.link) navigate(n.link);
-                        }}
-                        className={`p-3.5 hover:bg-blue-50/50 dark:hover:bg-slate-800/70 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50/30 dark:bg-slate-800/40' : ''
-                          }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className={`text-xs ${!n.isRead ? 'font-medium text-black dark:text-white' : 'font-normal text-black dark:text-slate-100'}`}>
-                            {n.title}
-                          </p>
-                          <span className="text-[10px] font-normal text-slate-700 dark:text-slate-300 shrink-0">
-                            {getTimeAgo(n.timestamp)}
-                          </span>
-                        </div>
-                        <p className="text-xs font-normal text-slate-800 dark:text-slate-200 mt-1 line-clamp-2 leading-relaxed">
-                          {n.message}
-                        </p>
-                      </div>
-                    ))}
-                    {notifications.length === 0 && (
-                      <div className="p-6 text-center text-xs font-normal text-slate-800 dark:text-slate-200">
-                        No notifications right now.
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-2.5 bg-blue-50/40 dark:bg-slate-800/60 border-t border-blue-100/80 dark:border-slate-700 text-center">
-                    <Link
-                      to="/notifications"
-                      onClick={() => setShowNotifMenu(false)}
-                      className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 inline-flex items-center gap-1"
-                    >
-                      <span>View all notifications</span>
-                      <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
-                    </Link>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Profile Avatar */}
@@ -162,6 +102,87 @@ export default function Navbar() {
           </div>
         </div>
       </header>
+
+      {/* Notifications Popover rendered outside <header> so backdrop-filter never clips fixed positioning */}
+      {showNotifMenu && (
+        <>
+          <div
+            className="fixed inset-0 bg-slate-900/20 dark:bg-slate-950/45 backdrop-blur-[3px] z-40"
+            onClick={() => setShowNotifMenu(false)}
+          />
+
+          <div className="fixed left-3 right-3 top-[64px] sm:absolute sm:left-auto sm:right-6 lg:right-8 sm:top-full sm:mt-2 sm:w-96 glass-popover rounded-2xl overflow-hidden z-50 animate-in fade-in-50 duration-150">
+            <div className="flex items-center justify-between px-4 py-3 bg-white/55 dark:bg-slate-800/55 border-b border-blue-100/80 dark:border-slate-700/80">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-black dark:text-white">Notifications</span>
+                {unreadNotificationsCount > 0 && (
+                  <Badge variant="primary" size="sm">
+                    {unreadNotificationsCount} new
+                  </Badge>
+                )}
+              </div>
+              {unreadNotificationsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={markAllNotificationsRead}
+                  className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-300 transition-colors"
+                >
+                  Mark all as read
+                </button>
+              )}
+            </div>
+
+            <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto divide-y divide-blue-100/75 dark:divide-slate-700/70">
+              {notifications.slice(0, 5).map((n) => (
+                <div
+                  key={n.id}
+                  onClick={() => {
+                    markNotificationRead(n.id);
+                    setShowNotifMenu(false);
+                    if (n.link) navigate(n.link);
+                  }}
+                  className={`p-3.5 hover:bg-white/75 dark:hover:bg-slate-800/75 cursor-pointer transition-colors ${
+                    !n.isRead ? 'bg-blue-50/70 dark:bg-sky-500/15' : ''
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-2 min-w-0">
+                      {!n.isRead && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400 shrink-0 mt-1" />
+                      )}
+                      <p className={`text-xs ${!n.isRead ? 'font-semibold text-black dark:text-white' : 'font-medium text-black dark:text-slate-100'}`}>
+                        {n.title}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-normal text-slate-600 dark:text-slate-300 shrink-0">
+                      {getTimeAgo(n.timestamp)}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-normal text-slate-700 dark:text-slate-200 mt-1 line-clamp-2 leading-relaxed ${!n.isRead ? 'pl-4' : ''}`}>
+                    {n.message}
+                  </p>
+                </div>
+              ))}
+              {notifications.length === 0 && (
+                <div className="p-6 text-center text-xs font-normal text-slate-700 dark:text-slate-200">
+                  No notifications right now.
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 bg-white/55 dark:bg-slate-800/55 border-t border-blue-100/80 dark:border-slate-700/80 text-center">
+              <Link
+                to="/notifications"
+                onClick={() => setShowNotifMenu(false)}
+                className="text-xs font-medium text-blue-600 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-300 inline-flex items-center gap-1"
+              >
+                <span>View all notifications</span>
+                <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -106,7 +106,7 @@ export default function Sidebar({ isOpen, onClose }) {
                   Bee Property
                 </span>
                 <span className="block font-medium text-[10px] tracking-[0.12em] uppercase text-blue-600 dark:text-sky-400 mt-0.5">
-                  Residence APP
+                  Resident Portal
                 </span>
               </div>
             </div>

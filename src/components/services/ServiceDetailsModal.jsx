@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import Badge from '../common/Badge';
+import ImagePreviewModal from '../common/ImagePreviewModal';
 import { formatDate } from '../../utils/formatters';
 import { useAuth } from '../../context/AuthContext';
 import { useHousehold } from '../../context/HouseholdContext';
@@ -12,7 +13,8 @@ import {
   CheckCircle2,
   XCircle,
   Star,
-  X
+  X,
+  Camera
 } from 'lucide-react';
 
 const STATUS_STEPS = ['Pending', 'Approved', 'Scheduled', 'In Progress', 'Completed'];
@@ -21,6 +23,7 @@ export default function ServiceDetailsModal({ ticket, isOpen, onClose }) {
   const { currentUser } = useAuth();
   const { cancelServiceRequest } = useHousehold();
   const { addToast } = useToast();
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   if (!ticket) return null;
 
@@ -45,7 +48,8 @@ export default function ServiceDetailsModal({ ticket, isOpen, onClose }) {
   };
 
   return (
-    <Modal
+    <>
+      <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={`Service Ticket: ${ticket.id}`}
@@ -80,6 +84,36 @@ export default function ServiceDetailsModal({ ticket, isOpen, onClose }) {
           <h4 className="text-sm sm:text-base font-medium text-black dark:text-white">{ticket.title}</h4>
           <p className="text-xs text-black/75 dark:text-slate-300 mt-1 leading-relaxed">{ticket.description}</p>
         </div>
+
+        {/* Attached Photos Gallery if available */}
+        {ticket.photos && ticket.photos.length > 0 && (
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/65 dark:bg-slate-800/75 border border-white/85 dark:border-slate-700/75 shadow-xs">
+            <p className="text-[11px] font-medium text-black/70 dark:text-slate-300 uppercase tracking-wider mb-2.5">
+              Attached Photos ({ticket.photos.length})
+            </p>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {ticket.photos.map((photo, idx) => (
+                <div
+                  key={idx}
+                  className="relative group w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-white/80 dark:border-slate-600 shadow-xs shrink-0 cursor-pointer"
+                  onClick={() => setSelectedPhoto(photo)}
+                  title="Click to view full photo"
+                >
+                  <img
+                    src={photo}
+                    alt={`Attached issue photo ${idx + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  />
+                  <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-[10px] text-white font-medium bg-black/60 px-1.5 py-0.5 rounded-md backdrop-blur-xs">
+                      View
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Lifecycle Visual Timeline */}
         <div className="p-3.5 sm:p-4 rounded-2xl bg-white/65 dark:bg-slate-800/75 border border-white/85 dark:border-slate-700/75 shadow-xs overflow-x-auto no-scrollbar">
@@ -262,5 +296,15 @@ export default function ServiceDetailsModal({ ticket, isOpen, onClose }) {
         </div>
       </div>
     </Modal>
-  );
+
+    {/* Lightbox Preview Modal for attached photos */}
+    <ImagePreviewModal
+      isOpen={!!selectedPhoto}
+      onClose={() => setSelectedPhoto(null)}
+      src={selectedPhoto}
+      alt="Attached Issue Photo"
+      subtitle={ticket.title}
+    />
+  </>
+);
 }

@@ -12,7 +12,6 @@ import {
   Phone,
   Mail,
   Building,
-  Lock,
   Bell,
   PhoneCall,
   ShieldAlert,
@@ -37,12 +36,6 @@ export default function ProfilePage() {
     email: currentUser?.email || ''
   });
 
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-
   const [notificationsPrefs, setNotificationsPrefs] = useState({
     visitorArrivals: true,
     serviceStatus: true,
@@ -59,24 +52,6 @@ export default function ProfilePage() {
       message: 'Your personal information has been updated.',
       type: 'success'
     });
-  };
-
-  const handlePasswordSubmit = (e) => {
-    e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      addToast({
-        title: 'Password Mismatch',
-        message: 'New password and confirmation do not match.',
-        type: 'error'
-      });
-      return;
-    }
-    addToast({
-      title: 'Password Updated',
-      message: 'Password changed successfully for demonstration.',
-      type: 'success'
-    });
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
   const handleTogglePref = (key) => {
@@ -134,9 +109,8 @@ export default function ProfilePage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {/* Personal Details Form */}
-        <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
+      {/* Personal Details Form */}
+      <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
           <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
             <User className="w-4 h-4 text-blue-600" />
             <span>Personal Information</span>
@@ -183,60 +157,6 @@ export default function ProfilePage() {
               Save Profile Changes
             </Button>
           </form>
-        </div>
-
-        {/* Change Password Form */}
-        <div className="glass-card rounded-3xl p-4 sm:p-6 shadow-xs">
-          <h3 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-blue-600" />
-            <span>Change Password</span>
-          </h3>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-3.5 sm:space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-blue-950 mb-1">
-                Current Password
-              </label>
-              <input
-                type="password"
-                value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-blue-950 mb-1">
-                New Password
-              </label>
-              <input
-                type="password"
-                value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                placeholder="At least 6 characters"
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-blue-950 mb-1">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                value={passwordForm.confirmPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                placeholder="Confirm password"
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm glass-input rounded-xl focus:outline-none"
-              />
-            </div>
-
-            <Button variant="secondary" size="md" type="submit" className="w-full sm:w-auto">
-              Update Password
-            </Button>
-          </form>
-        </div>
       </div>
 
       {/* Notification Preferences */}

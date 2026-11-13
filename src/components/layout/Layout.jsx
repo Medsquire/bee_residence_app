@@ -21,7 +21,7 @@ export default function Layout() {
       <div className="flex-1 lg:pl-72 flex flex-col min-w-0">
         <Navbar />
 
-        <main className="flex-1 px-3 sm:px-6 lg:px-8 pt-3.5 pb-24 sm:py-5 lg:pb-12 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-3 sm:px-6 lg:px-8 pt-2 sm:pt-3 pb-24 sm:pb-6 lg:pb-12 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
 

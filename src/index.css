@@ -239,6 +239,22 @@
   box-shadow: 0 28px 64px -16px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
+.glass-popover {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.90) 0%, rgba(240, 247, 255, 0.86) 55%, rgba(255, 255, 255, 0.92) 100%);
+  backdrop-filter: blur(26px) saturate(185%);
+  -webkit-backdrop-filter: blur(26px) saturate(185%);
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  box-shadow: 0 24px 56px -12px rgba(30, 58, 138, 0.28), 0 8px 20px -6px rgba(15, 23, 42, 0.10), inset 0 1.5px 1px rgba(255, 255, 255, 0.98);
+}
+
+.dark .glass-popover {
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 41, 59, 0.84) 55%, rgba(15, 23, 42, 0.92) 100%);
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  border: 1px solid rgba(148, 163, 184, 0.40);
+  box-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
 .glass-input {
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);

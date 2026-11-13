@@ -18,7 +18,8 @@ import {
   Hammer,
   Snowflake,
   Building2,
-  Waves
+  Waves,
+  Camera
 } from 'lucide-react';
 
 const CATEGORY_ICONS = {
@@ -131,6 +132,13 @@ export default function ServiceCard({ ticket, onInspect }) {
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/70 dark:bg-slate-800/80 border border-white/85 dark:border-slate-700/75 text-[11px] font-medium text-black dark:text-white shadow-2xs truncate max-w-full">
             <UserCheck className="w-3 h-3 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.6} />
             <span className="truncate">{ticket.technician.name}</span>
+          </span>
+        )}
+
+        {ticket.photos && ticket.photos.length > 0 && (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/70 dark:bg-slate-800/80 border border-white/85 dark:border-slate-700/75 text-[11px] font-medium text-black dark:text-white shadow-2xs">
+            <Camera className="w-3 h-3 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.6} />
+            <span>{ticket.photos.length}</span>
           </span>
         )}
       </div>

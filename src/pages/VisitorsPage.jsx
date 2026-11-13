@@ -22,7 +22,6 @@ const TABS = [
   { id: 'Pending', label: 'Pending Approval' },
   { id: 'Approved', label: 'Approved' },
   { id: 'pre-approved', label: 'Pre-Approved Visitors' },
-  { id: 'Leave at Gate', label: 'Parcels at Gate' },
   { id: 'Rejected', label: 'Rejected' },
   { id: 'Completed', label: 'Completed' }
 ];
@@ -98,11 +97,7 @@ export default function VisitorsPage() {
   const filteredVisitors = useMemo(() => {
     return visitors.filter((v) => {
       // Tab filter
-      if (activeTab === 'Leave at Gate') {
-        if (v.status !== 'Leave at Gate' && !(v.status === 'Approved' && v.decisionNote?.includes('gate'))) {
-          return false;
-        }
-      } else if (activeTab !== 'all' && v.status !== activeTab) {
+      if (activeTab !== 'all' && v.status !== activeTab) {
         return false;
       }
 
