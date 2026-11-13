@@ -52,11 +52,11 @@ export default function VisitorCard({ visitor, onInspect, onDecision }) {
   return (
     <>
       <div
-        className={`rounded-2xl transition-all duration-200 overflow-hidden ${
+        className={`rounded-2xl transition-all duration-200 overflow-hidden h-full flex flex-col justify-between ${
           isPending ? 'glass-stat-blue' : 'glass-stat-white'
         }`}
       >
-        <div className="p-3 sm:p-3.5">
+        <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between">
           <div className="flex items-start gap-2.5 sm:gap-3">
             {/* Avatar */}
             <button
@@ -129,7 +129,7 @@ export default function VisitorCard({ visitor, onInspect, onDecision }) {
 
       {/* Frosted Glass Icon-Only Action Bar */}
       {isPending ? (
-        <div className="px-3 sm:px-3.5 pb-3 pt-0.5">
+        <div className="px-3 sm:px-3.5 pb-3 pt-0.5 mt-auto">
           <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-white/45 dark:bg-slate-900/45 backdrop-blur-md border border-white/80 dark:border-slate-700/70 shadow-xs">
             <button
               type="button"
@@ -163,7 +163,7 @@ export default function VisitorCard({ visitor, onInspect, onDecision }) {
           </div>
         </div>
       ) : (
-        <div className="px-3 sm:px-3.5 py-2 bg-white/40 dark:bg-slate-900/35 border-t border-blue-100/60 dark:border-slate-700/70 flex items-center justify-between text-[11px] font-normal text-black dark:text-slate-200">
+        <div className="px-3 sm:px-3.5 py-2 mt-auto bg-white/40 dark:bg-slate-900/35 border-t border-blue-100/60 dark:border-slate-700/70 flex items-center justify-between text-[11px] font-normal text-black dark:text-slate-200">
           <div className="flex items-center gap-1.5 min-w-0 pr-2">
             {visitor.status === 'Approved' ? (
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400 shrink-0" strokeWidth={1.5} />

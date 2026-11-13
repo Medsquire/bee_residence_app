@@ -212,7 +212,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {recentVisitors.map((visitor) => (
             <VisitorCard
               key={visitor.id}
@@ -223,7 +223,7 @@ export default function DashboardPage() {
           ))}
 
           {recentVisitors.length === 0 && (
-            <p className="text-xs text-slate-800 dark:text-slate-200 text-center py-6">
+            <p className="text-xs text-slate-800 dark:text-slate-200 text-center py-6 col-span-full">
               No recent visitor logs.
             </p>
           )}

@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 scratch/
+*.docx
+~$*
 
 # Editor directories and files
 .vscode/*
