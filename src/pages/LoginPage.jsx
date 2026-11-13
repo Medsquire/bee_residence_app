@@ -160,9 +160,6 @@ export default function LoginPage() {
         <div className="absolute -top-20 -left-16 w-80 h-80 rounded-full bg-blue-400/45 dark:bg-blue-500/25 blur-3xl" />
         <div className="absolute top-1/3 -right-16 w-80 h-80 rounded-full bg-sky-300/45 dark:bg-sky-500/20 blur-3xl" />
         <div className="absolute -bottom-24 left-1/4 w-80 h-80 rounded-full bg-indigo-400/35 dark:bg-indigo-500/25 blur-3xl" />
-        {/* Floating glass rim accents framing the central card */}
-        <div className="hidden sm:block absolute top-1/4 left-1/2 -translate-x-64 w-28 h-28 rounded-full bg-white/30 dark:bg-sky-400/10 border border-white/65 dark:border-white/15 backdrop-blur-md" />
-        <div className="hidden sm:block absolute bottom-1/4 right-1/2 translate-x-64 w-24 h-24 rounded-full bg-white/25 dark:bg-indigo-400/10 border border-white/60 dark:border-white/15 backdrop-blur-md" />
       </div>
 
       <div className="w-full max-w-sm sm:max-w-md relative z-10">
